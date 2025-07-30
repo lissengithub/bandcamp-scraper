@@ -63,6 +63,7 @@ search(searchParams, (error: Error | null, results: any) => {
 - `TrackInfo` - Track information object
 - `ArtistInfo` - Artist information object
 - `AlbumProduct` - Album product object
+- `MerchItem` - Merchandise item object
 - `Callback<T>` - Generic callback type
 
 ## Usage
@@ -291,6 +292,62 @@ bandcamp.getTrackInfo(trackUrl, function (error, trackInfo) {
 ```
 
 [View example with output](examples/getTrackInfo.js).
+
+### `hasMerch(artistUrl, callback)`
+
+Checks if an artist has merch available on their Bandcamp page.
+
+- artistUrl _String_
+- callback _Function(error, hasMerch)_
+
+#### Example
+
+```js
+const bandcamp = require('bandcamp-scraper')
+
+const artistUrl = 'https://frenetikglasgow.bandcamp.com'
+bandcamp.hasMerch(artistUrl, function (error, hasMerch) {
+  if (error) {
+    console.log(error)
+  } else {
+    console.log('Has merch:', hasMerch)
+  }
+})
+```
+
+### `getMerch(artistUrl, callback)`
+
+Retrieves all merch items from an artist's Bandcamp merch page.
+
+- artistUrl _String_
+- callback _Function(error, merchItems)_
+
+#### Merch Items
+
+An array of merch items with the following properties:
+- `title` - The name of the merch item
+- `type` - The type of merch (e.g., "T-Shirt/Apparel")
+- `price` - The price of the item (if available)
+- `status` - Availability status ("Available" or "Sold Out")
+- `imageUrl` - URL to the merch item image
+- `url` - Direct link to the merch item
+
+#### Example
+
+```js
+const bandcamp = require('bandcamp-scraper')
+
+const artistUrl = 'https://frenetikglasgow.bandcamp.com'
+bandcamp.getMerch(artistUrl, function (error, merchItems) {
+  if (error) {
+    console.log(error)
+  } else {
+    console.log(merchItems)
+  }
+})
+```
+
+[View example with output](examples/merch-example.js).
 
 ## Development
 

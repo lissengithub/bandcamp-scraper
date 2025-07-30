@@ -54,6 +54,14 @@ export interface AlbumProduct {
     type: string;
     url?: string;
 }
+export interface MerchItem {
+    title: string;
+    type: string;
+    price?: string;
+    status?: string;
+    imageUrl?: string;
+    url?: string;
+}
 export interface ArtistInfo {
     name: string;
     url: string;

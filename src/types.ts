@@ -61,6 +61,15 @@ export interface AlbumProduct {
   url?: string;
 }
 
+export interface MerchItem {
+  title: string;
+  type: string;
+  price?: string;
+  status?: string; // "Available", "Sold Out", etc.
+  imageUrl?: string;
+  url?: string;
+}
+
 export interface ArtistInfo {
   name: string;
   url: string;

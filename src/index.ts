@@ -2,15 +2,16 @@ import req from 'tinyreq';
 import * as urlHelper from 'url';
 import * as htmlParser from './htmlParser';
 import * as utils from './utils';
-import { 
-  SearchParams, 
-  TagParams, 
-  SearchResult, 
-  TagResult, 
-  AlbumInfo, 
+import {
+  SearchParams,
+  TagParams,
+  SearchResult,
+  TagResult,
+  AlbumInfo,
   AlbumProduct, 
   ArtistInfo, 
   TrackInfo,
+  MerchItem,
   Callback 
 } from './types';
 
@@ -102,6 +103,30 @@ export function getTrackInfo(trackUrl: string, cb: Callback<TrackInfo>): void {
     } else {
       const trackInfo = htmlParser.parseTrackInfo(html, trackUrl)
       cb(null, trackInfo)
+    }
+  })
+}
+
+export function hasMerch(artistUrl: string, cb: Callback<boolean>): void {
+  const merchUrl = new urlHelper.URL('/merch', artistUrl).toString()
+  req(merchUrl, function (error: Error | null, html: string) {
+    if (error) {
+      cb(error, null)
+    } else {
+      const hasMerchItems = htmlParser.hasMerch(html)
+      cb(null, hasMerchItems)
+    }
+  })
+}
+
+export function getMerch(artistUrl: string, cb: Callback<MerchItem[]>): void {
+  const merchUrl = new urlHelper.URL('/merch', artistUrl).toString()
+  req(merchUrl, function (error: Error | null, html: string) {
+    if (error) {
+      cb(error, null)
+    } else {
+      const merchItems = htmlParser.parseMerch(html, merchUrl)
+      cb(null, merchItems)
     }
   })
 }

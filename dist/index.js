@@ -47,6 +47,8 @@ exports.getAlbumProducts = getAlbumProducts;
 exports.getArtistUrls = getArtistUrls;
 exports.getArtistInfo = getArtistInfo;
 exports.getTrackInfo = getTrackInfo;
+exports.hasMerch = hasMerch;
+exports.getMerch = getMerch;
 const tinyreq_1 = __importDefault(require("tinyreq"));
 const urlHelper = __importStar(require("url"));
 const htmlParser = __importStar(require("./htmlParser"));
@@ -140,6 +142,30 @@ function getTrackInfo(trackUrl, cb) {
         else {
             const trackInfo = htmlParser.parseTrackInfo(html, trackUrl);
             cb(null, trackInfo);
+        }
+    });
+}
+function hasMerch(artistUrl, cb) {
+    const merchUrl = new urlHelper.URL('/merch', artistUrl).toString();
+    (0, tinyreq_1.default)(merchUrl, function (error, html) {
+        if (error) {
+            cb(error, null);
+        }
+        else {
+            const hasMerchItems = htmlParser.hasMerch(html);
+            cb(null, hasMerchItems);
+        }
+    });
+}
+function getMerch(artistUrl, cb) {
+    const merchUrl = new urlHelper.URL('/merch', artistUrl).toString();
+    (0, tinyreq_1.default)(merchUrl, function (error, html) {
+        if (error) {
+            cb(error, null);
+        }
+        else {
+            const merchItems = htmlParser.parseMerch(html, merchUrl);
+            cb(null, merchItems);
         }
     });
 }
