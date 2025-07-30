@@ -29,6 +29,43 @@ Because Bandcamp has shut down their public API and don't plan to reopen it.
 npm i --save bandcamp-scraper
 ```
 
+## TypeScript Support
+
+This project is now written in TypeScript and provides full type definitions. The compiled JavaScript is available in the `dist` directory.
+
+### TypeScript Usage
+
+```typescript
+import { search, getAlbumInfo, SearchParams, AlbumInfo } from 'bandcamp-scraper';
+
+const searchParams: SearchParams = {
+  query: 'Mac DeMarco',
+  page: 1
+};
+
+search(searchParams, (error: Error | null, results: any) => {
+  if (error) {
+    console.error('Search error:', error);
+    return;
+  }
+  
+  console.log(`Found ${results.length} results`);
+});
+```
+
+### Available Types
+
+- `SearchParams` - Parameters for search function
+- `TagParams` - Parameters for tag search function
+- `SearchResult` - Search result object
+- `TagResult` - Tag search result object
+- `AlbumInfo` - Album information object
+- `TrackInfo` - Track information object
+- `ArtistInfo` - Artist information object
+- `AlbumProduct` - Album product object
+- `MerchItem` - Merchandise item object
+- `Callback<T>` - Generic callback type
+
 ## Usage
 
 ### `search(params, callback)`
@@ -63,7 +100,7 @@ bandcamp.search(params, function (error, searchResults) {
 })
 ```
 
-[View example with output](examples/search.js).
+[View example with output](examples/search.ts).
 
 ### `getAlbumsWithTag(params, callback)`
 
@@ -95,7 +132,7 @@ bandcamp.getAlbumsWithTag(params, function (error, tagResults) {
 })
 ```
 
-[View example with output](examples/tag.js).
+[View example with output](examples/getAlbumsWithTag.ts).
 
 ### `getAlbumUrls(artistUrl, callback)`
 
@@ -120,7 +157,7 @@ bandcamp.getAlbumUrls(artistUrl, function (error, albumUrls) {
 })
 ```
 
-[View example with output](examples/getAlbumUrls.js).
+[View example with output](examples/getAlbumUrls.ts).
 
 ### `getAlbumProducts(albumUrl, callback)`
 
@@ -148,7 +185,7 @@ bandcamp.getAlbumProducts(albumUrl, function (error, albumProducts) {
 })
 ```
 
-[View example with output](examples/getAlbumProducts.js).
+[View example with output](examples/getAlbumProducts.ts).
 
 ### `getAlbumInfo(albumUrl, callback)`
 
@@ -176,7 +213,7 @@ bandcamp.getAlbumInfo(albumUrl, function (error, albumInfo) {
 })
 ```
 
-[View example with output](examples/getAlbumInfo.js).
+[View example with output](examples/getAlbumInfo.ts).
 
 ### `getArtistUrls(labelUrl, callback)`
 
@@ -200,7 +237,7 @@ bandcamp.getArtistUrls(labelUrl, function (error, artistsUrls) {
 })
 ```
 
-[View example with output](examples/getArtistUrls.js).
+[View example with output](examples/getArtistsUrls.ts).
 
 ### `getArtistInfo(artistUrl, callback)`
 
@@ -227,7 +264,7 @@ bandcamp.getArtistInfo(artistUrl, function (error, artistInfo) {
 })
 ```
 
-[View example with output](examples/getArtistInfo.js).
+[View example with output](examples/getArtistInfo.ts).
 
 ### `getTrackInfo(trackUrl, callback)`
 
@@ -253,6 +290,104 @@ bandcamp.getTrackInfo(trackUrl, function (error, trackInfo) {
   }
 })
 ```
+
+[View example with output](examples/getTrackInfo.ts).
+
+### `hasMerch(artistUrl, callback)`
+
+Checks if an artist has merch available on their Bandcamp page.
+
+- artistUrl _String_
+- callback _Function(error, hasMerch)_
+
+#### Example
+
+```js
+const bandcamp = require('bandcamp-scraper')
+
+const artistUrl = 'https://frenetikglasgow.bandcamp.com'
+bandcamp.hasMerch(artistUrl, function (error, hasMerch) {
+  if (error) {
+    console.log(error)
+  } else {
+    console.log('Has merch:', hasMerch)
+  }
+})
+```
+
+### `getMerch(artistUrl, callback)`
+
+Retrieves all merch items from an artist's Bandcamp merch page.
+
+- artistUrl _String_
+- callback _Function(error, merchItems)_
+
+#### Merch Items
+
+An array of merch items with the following properties:
+- `title` - The name of the merch item
+- `type` - The type of merch (e.g., "T-Shirt/Apparel")
+- `price` - The price of the item (if available)
+- `status` - Availability status ("Available" or "Sold Out")
+- `imageUrl` - URL to the merch item image
+- `url` - Direct link to the merch item
+
+#### Example
+
+```js
+const bandcamp = require('bandcamp-scraper')
+
+const artistUrl = 'https://frenetikglasgow.bandcamp.com'
+bandcamp.getMerch(artistUrl, function (error, merchItems) {
+  if (error) {
+    console.log(error)
+  } else {
+    console.log(merchItems)
+  }
+})
+```
+
+[View example with output](examples/merch-example.ts).
+
+## Development
+
+This project is written in TypeScript. To work on the codebase:
+
+### Prerequisites
+
+- Node.js (version 14 or higher)
+- npm
+
+### Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Build TypeScript to JavaScript
+npm run build
+
+# Watch for changes during development
+npm run dev
+```
+
+### Project Structure
+
+- `src/` - TypeScript source files
+- `dist/` - Compiled JavaScript files (generated)
+- `schemas/` - JSON schemas for validation
+- `examples/` - Usage examples
+- `spec/` - Test files
+
+### Available Scripts
+
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm run dev` - Watch mode for development
+- `npm test` - Run tests (builds first)
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:coverage` - Run tests with coverage report
+- `npm run lint` - Run linter
+- `npm run lint-fix` - Fix linting issues
 
 ## Test
 

@@ -1,11 +1,11 @@
-const bandcamp = require('../lib/index')
+import { getAlbumsWithTag, TagParams, TagResult } from '../dist/index'
 
-const params = {
+const params: TagParams = {
   tag: 'nuwrld',
   page: 1
 }
 
-bandcamp.getAlbumsWithTag(params, function (error, tagResults) {
+getAlbumsWithTag(params, function (error: Error | null, tagResults: TagResult[] | null) {
   if (error) {
     console.log(error)
   } else {
@@ -134,4 +134,4 @@ bandcamp.getAlbumsWithTag(params, function (error, tagResults) {
   { name: 'PLUG IN, DROP OUT',
     artist: 'Golden Living Room',
     url: 'https://goldenlivingroom.bandcamp.com/album/plug-in-drop-out' } ]
-*/
+*/ 

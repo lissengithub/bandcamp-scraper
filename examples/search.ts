@@ -1,11 +1,11 @@
-const bandcamp = require('../lib/index')
+import { search, SearchParams, SearchResult } from '../dist/index'
 
-const params = {
+const params: SearchParams = {
   query: 'Coeur de pirate',
   page: 1
 }
 
-bandcamp.search(params, function (error, searchResults) {
+search(params, function (error: Error | null, searchResults: SearchResult[] | null) {
   if (error) {
     console.log(error)
   } else {
@@ -167,4 +167,4 @@ bandcamp.search(params, function (error, searchResults) {
     releaseDate: '23 January 2013',
     album: 'from Demos and Other Nice Stuff',
     artist: 'The Steady Lungs' } ]
-*/
+*/ 
