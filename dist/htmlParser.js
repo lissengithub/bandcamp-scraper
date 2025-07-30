@@ -60,7 +60,7 @@ ajv.addSchema(require('../schemas/album-product.json'), 'album-product');
 ajv.addSchema(require('../schemas/album-info.json'), 'album-info');
 ajv.addSchema(require('../schemas/tag-result.json'), 'tag-result');
 ajv.addSchema(require('../schemas/track-info.json'), 'track-info');
-// ajv.addSchema(require('../schemas/merch-item.json'), 'merch-item');
+ajv.addSchema(require('../schemas/merch-item.json'), 'merch-item');
 linez_1.default.configure({
     newlines: ['\n', '\r\n', '\r'],
 });
@@ -317,7 +317,6 @@ function extractJavascriptObjectVariable(html, variableName) {
 }
 function parseAlbumInfo(html, albumUrl) {
     const $ = cheerio_1.default.load(html);
-    console.log('Is it happening here???!?!??!?!');
     const data = scrapeIt.scrapeHTML($, {
         album: {
             selector: 'body',
@@ -336,13 +335,6 @@ function parseAlbumInfo(html, albumUrl) {
                 },
                 tags: {
                     listItem: '.tag',
-                    data: {
-                        name: {
-                            convert: function (tag) {
-                                return tag;
-                            },
-                        },
-                    },
                 },
                 tracks: {
                     listItem: 'table#track_table tr.track_row_view',
@@ -380,7 +372,6 @@ function parseAlbumInfo(html, albumUrl) {
             },
         },
     });
-    console.log('BANDCAMP-PARSER DATA:', JSON.stringify(data, null, 2));
     for (const nonPlayableTrack of data.album.nonPlayableTracks) {
         data.album.tracks.push(nonPlayableTrack);
     }
