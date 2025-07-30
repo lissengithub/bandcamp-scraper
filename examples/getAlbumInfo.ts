@@ -1,7 +1,7 @@
-const bandcamp = require('../lib/index')
+import { getAlbumInfo, AlbumInfo } from '../dist/index'
 
 const albumUrl = 'http://musique.coeurdepirate.com/album/blonde'
-bandcamp.getAlbumInfo(albumUrl, function (error, albumInfo) {
+getAlbumInfo(albumUrl, function (error: Error | null, albumInfo: AlbumInfo | null) {
   if (error) {
     console.log(error)
   } else {
@@ -70,7 +70,7 @@ bandcamp.getAlbumInfo(albumUrl, function (error, albumInfo) {
         minimum_price: 9,
         new_date: '19 Sep 2011 15:29:09 GMT',
         id: 838845289,
-        credits: 'Réalisation : Howard Bilerman et Béatrice Martin\r\nPrise de son : Howard Bilerman à l’Hôtel2Tango\r\nPrise de son additionnelle : Radwan Moumneh à l’Hôtel2Tango\r\nPrise de son additionnelle pour 4 : François Gueurce au studio Pigalle\r\nPrise de son additionnelle pour 3 : Eric Cheng au studio The Wash ‘N Dry\r\nPrise de son piano : Radwan Moumneh et Martin Léveillé au Studio Revere\r\nPrise de son cordes pour 3, 8 et 12 : Howard Bilerman et Martin Léveillé à l’Hôtel2Tango\r\nMixage :\r\nHoward Bilerman à l’Hôtel2Tango : 1, 6, 7, 9, 11, 12, 13 et 14\r\nEric Cheng au studio The Wash ‘N Dry : 3 et 10\r\nBruno Dejarnac au studio Soyuz : 5 et 8\r\nJulien Delfaud au studio RDPC : 2\r\nPierrick Devin à Good Boy Studio : 4\r\nMatriçage : Marc Thériault – Le Lab Mastering\r\nDirection artistique : Eli Bissonnette\r\nProduction déléguée : Eli Bissonnette, assisté de Jeanne Joly et Laurie Boisvert\r\nPhotographie : Clara Palardy\r\nDesign graphique : Catherine D’Amours',
+        credits: 'Réalisation : Howard Bilerman et Béatrice Martin\r\nPrise de son : Howard Bilerman à l'Hôtel2Tango\r\nPrise de son additionnelle : Radwan Moumneh à l'Hôtel2Tango\r\nPrise de son additionnelle pour 4 : François Gueurce au studio Pigalle\r\nPrise de son additionnelle pour 3 : Eric Cheng au studio The Wash 'N Dry\r\nPrise de son piano : Radwan Moumneh et Martin Léveillé au Studio Revere\r\nPrise de son cordes pour 3, 8 et 12 : Howard Bilerman et Martin Léveillé à l'Hôtel2Tango\r\nMixage :\r\nHoward Bilerman à l'Hôtel2Tango : 1, 6, 7, 9, 11, 12, 13 et 14\r\nEric Cheng au studio The Wash 'N Dry : 3 et 10\r\nBruno Dejarnac au studio Soyuz : 5 et 8\r\nJulien Delfaud au studio RDPC : 2\r\nPierrick Devin à Good Boy Studio : 4\r\nMatriçage : Marc Thériault – Le Lab Mastering\r\nDirection artistique : Eli Bissonnette\r\nProduction déléguée : Eli Bissonnette, assisté de Jeanne Joly et Laurie Boisvert\r\nPhotographie : Clara Palardy\r\nDesign graphique : Catherine D'Amours',
         require_email_0: null,
         publish_date: '19 Sep 2011 15:29:09 GMT',
         new_desc_format: 1,
@@ -80,7 +80,7 @@ bandcamp.getAlbumInfo(albumUrl, function (error, albumInfo) {
         audit: 0,
         selling_band_id: 841522492,
         band_id: 2534369253,
-        about: 'Après avoir immortalisé tout un pan de son adolescence dans les chansons pop douces-amères d\'un premier album homonyme, Coeur de pirate s\'attaque aux différentes étapes de la relation amoureuse, d\'où le titre de l\'album, en référence avant tout, à la copine, à l\'amoureuse. L\'album a été enregistré à l\'été 2011 à l\'Hotel2Tango sous la gouverne d\'Howard Bilerman, coréalisateur avec Béatrice Martin.',
+        about: 'Après avoir immortalisé tout un pan de son adolescence dans les chansons pop douces-amères d'un premier album homonyme, Coeur de pirate s'attaque aux différentes étapes de la relation amoureuse, d'où le titre de l'album, en référence avant tout, à la copine, à l'amoureuse. L'album a été enregistré à l'été 2011 à l'Hotel2Tango sous la gouverne d'Howard Bilerman, coréalisateur avec Béatrice Martin.',
         download_pref: 2 },
      is_preorder: null,
      album_is_preorder: null,
@@ -101,29 +101,13 @@ bandcamp.getAlbumInfo(albumUrl, function (error, albumInfo) {
         [Object],
         [Object],
         [Object] ],
-     playing_from: 'album page',
-     featured_track_id: 3647767496,
-     initial_track_num: null,
-     packages: [ [Object], [Object] ],
      url: 'http://musique.coeurdepirate.com/album/blonde',
-     defaultPrice: 7,
-     freeDownloadPage: null,
-     FREE: 1,
-     PAID: 2,
+     title: 'Blonde',
      artist: 'Cœur de pirate',
-     item_type: 'album',
-     id: 838845289,
-     last_subscription_item: null,
-     has_discounts: null,
-     is_bonus: null,
-     play_cap_data: { streaming_limit: 3, streaming_limits_enabled: true },
-     client_id_sig: null,
-     is_purchased: null,
-     items_purchased: null,
-     is_private_stream: null,
-     is_band_member: null,
-     licensed_version_ids: null,
-     tralbum_collect_info: { show_collect: true } },
-     url: 'http://musique.coeurdepirate.com/album/blonde'
-   }
-*/
+     genre: 'Pop',
+     tags: [ 'Québec', 'montreal', 'Pop', 'frenchpop', 'pianopop', 'coeurdepirate', 'Canada', 'Montréal', 'amour', 'grosseboîte', 'french' ],
+     releaseDate: '07 November 2011',
+     numTracks: 12,
+     numMinutes: 36,
+     description: 'Après avoir immortalisé tout un pan de son adolescence dans les chansons pop douces-amères d'un premier album homonyme, Coeur de pirate s'attaque aux différentes étapes de la relation amoureuse, d'où le titre de l'album, en référence avant tout, à la copine, à l'amoureuse. L'album a été enregistré à l'été 2011 à l'Hotel2Tango sous la gouverne d'Howard Bilerman, coréalisateur avec Béatrice Martin.' } }
+*/ 

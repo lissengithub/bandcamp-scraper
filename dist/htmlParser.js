@@ -462,7 +462,7 @@ function parseMerch(html, merchUrl) {
         const $element = $(this);
         const text = $element.text().trim();
         // Look for price patterns (including "Sold Out")
-        if (text.match(/^(£|€|\$|GBP|USD)\s*\d+/) || text.toLowerCase() === 'sold out') {
+        if (text.match(/^(£|€|\$)\s*\d+/) || text.toLowerCase() === 'sold out') {
             const $parent = $element.parent();
             const $container = $parent.closest('div, li, article');
             if ($container.length > 0) {

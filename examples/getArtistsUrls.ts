@@ -1,7 +1,7 @@
-const bandcamp = require('../lib/index')
+import { getArtistUrls } from '../dist/index'
 
 const labelUrl = 'https://randsrecords.bandcamp.com'
-bandcamp.getArtistUrls(labelUrl, function (error, artistsUrls) {
+getArtistUrls(labelUrl, function (error: Error | null, artistsUrls: string[] | null) {
   if (error) {
     console.log(error)
   } else {
@@ -65,4 +65,4 @@ bandcamp.getArtistUrls(labelUrl, function (error, artistsUrls) {
   'https://kenishii.bandcamp.com/?label=999120622&tab=artists',
   'https://specialrequest187.bandcamp.com/?label=999120622&tab=artists'
 ]
-*/
+*/ 

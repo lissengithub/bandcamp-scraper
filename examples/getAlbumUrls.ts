@@ -1,7 +1,7 @@
-const bandcamp = require('../lib/index')
+import { getAlbumUrls } from '../dist/index'
 
 const artistUrl = 'http://musique.coeurdepirate.com/'
-bandcamp.getAlbumUrls(artistUrl, function (error, albumUrls) {
+getAlbumUrls(artistUrl, function (error: Error | null, albumUrls: string[] | null) {
   if (error) {
     console.log(error)
   } else {
@@ -18,4 +18,4 @@ bandcamp.getAlbumUrls(artistUrl, function (error, albumUrls) {
   'http://musique.coeurdepirate.com/album/blonde',
   'http://musique.coeurdepirate.com/album/coeur-de-pirate',
   'http://musique.coeurdepirate.com/album/comme-des-enfants-version-originale-et-remix-par-le-matos' ]
-*/
+*/ 

@@ -4,19 +4,3 @@ npm-debug.log*
 node_modules
 .npm
 .DS_Store
-
-# TypeScript
-*.tsbuildinfo
-
-# Testing
-coverage/
-.nyc_output/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-Thumbs.db

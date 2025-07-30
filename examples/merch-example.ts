@@ -1,9 +1,9 @@
-const bandcamp = require('../dist/index')
+import { hasMerch, getMerch, MerchItem } from '../dist/index'
 
-const artistUrl = 'https://driftdeeper.bandcamp.com/'
+const artistUrl = 'https://frenetikglasgow.bandcamp.com'
 
 // First check if the artist has merch available
-bandcamp.hasMerch(artistUrl, function (error, hasMerchItems) {
+hasMerch(artistUrl, (error: Error | null, hasMerchItems: boolean | null) => {
   if (error) {
     console.error('Error checking for merch:', error)
     return
@@ -13,14 +13,13 @@ bandcamp.hasMerch(artistUrl, function (error, hasMerchItems) {
     console.log('✅ This artist has merch available!')
     
     // If merch is available, get the merch items
-    bandcamp.getMerch(artistUrl, function (error, merchItems) {
+    getMerch(artistUrl, (error: Error | null, merchItems: MerchItem[] | null) => {
       if (error) {
         console.error('Error getting merch:', error)
         return
       }
       
       if (merchItems && merchItems.length > 0) {
-        console.log(merchItems)
         console.log(`\n🛍️  Found ${merchItems.length} merch items:`)
         merchItems.forEach((item, index) => {
           console.log(`\n${index + 1}. ${item.title}`)

@@ -1,7 +1,7 @@
-const bandcamp = require('../lib/index')
+import { getAlbumProducts, AlbumProduct } from '../dist/index'
 
 const albumUrl = 'http://musique.coeurdepirate.com/album/blonde'
-bandcamp.getAlbumProducts(albumUrl, function (error, albumProducts) {
+getAlbumProducts(albumUrl, function (error: Error | null, albumProducts: AlbumProduct[] | null) {
   if (error) {
     console.log(error)
   } else {
@@ -98,85 +98,7 @@ bandcamp.getAlbumProducts(albumUrl, function (error, albumProducts) {
     imageUrls:
      [ 'http://f4.bcbits.com/img/0000153967_38.jpg',
        'http://f4.bcbits.com/img/0000145954_38.jpg' ],
-    priceInCents: 2500,
+    priceInCents: 3500,
     currency: 'CAD',
-    artist: 'Cœur de pirate' },
-  { description: 'Kangourou unisexe noir 100% coton',
-    soldOut: false,
-    nameYourPrice: false,
-    offerMore: true,
-    url: 'http://musique.coeurdepirate.com/album/blonde',
-    format: 'Kangourou avec fermeture éclair "Blonde"',
-    name: 'Kangourou avec fermeture éclair "Blonde"',
-    imageUrls:
-     [ 'http://f4.bcbits.com/img/0000168648_38.jpg',
-       'http://f4.bcbits.com/img/0000129047_38.jpg' ],
-    priceInCents: 2500,
-    currency: 'CAD',
-    artist: 'Cœur de pirate' },
-  { description: '3 macarons à l\'effigie de l\'album Blonde joliment placés sur un carton.',
-    soldOut: true,
-    nameYourPrice: false,
-    offerMore: false,
-    url: 'http://musique.coeurdepirate.com/album/blonde',
-    format: 'Other',
-    name: 'Ensemble de 3 macarons',
-    imageUrls:
-     [ 'http://f4.bcbits.com/img/0000118673_38.jpg',
-       'http://f4.bcbits.com/img/0000153245_38.jpg' ],
-    priceInCents: null,
-    currency: null,
-    artist: 'Cœur de pirate' },
-  { description: 'T-shirt American Apparel 50/50 unisexe noir 50% Polyester / 50% Cotton',
-    soldOut: true,
-    nameYourPrice: false,
-    offerMore: false,
-    url: 'http://musique.coeurdepirate.com/album/blonde',
-    format: 'T-Shirt/Apparel',
-    name: 'T-shirt - Noir - Blonde T-Shirt/Apparel',
-    imageUrls:
-     [ 'http://f4.bcbits.com/img/0000106475_38.jpg',
-       'http://f4.bcbits.com/img/0000122386_38.jpg' ],
-    priceInCents: null,
-    currency: null,
-    artist: 'Cœur de pirate' },
-  { description: 'Sac couleur naturelle en coton American Apparel. 36.5 cm x 35.6 cm',
-    soldOut: true,
-    nameYourPrice: false,
-    offerMore: false,
-    url: 'http://musique.coeurdepirate.com/album/blonde',
-    format: 'Other',
-    name: 'Sac fourre-tout - Blonde',
-    imageUrls:
-     [ 'http://f4.bcbits.com/img/0000173665_38.jpg',
-       'http://f4.bcbits.com/img/0000109871_38.jpg' ],
-    priceInCents: null,
-    currency: null,
-    artist: 'Cœur de pirate' },
-  { description: 'American Apparel Tri-Blend - Unisexe - Gris 50% Polyester / 25% Coton / 25% Rayone',
-    soldOut: true,
-    nameYourPrice: false,
-    offerMore: false,
-    url: 'http://musique.coeurdepirate.com/album/blonde',
-    format: 'T-Shirt/Apparel',
-    name: 'T-shirt - Mon beau navire - Gris T-Shirt/Apparel',
-    imageUrls:
-     [ 'http://f4.bcbits.com/img/0000141330_38.jpg',
-       'http://f4.bcbits.com/img/0000150936_38.jpg' ],
-    priceInCents: null,
-    currency: null,
-    artist: 'Cœur de pirate' },
-  { description: 'American Apparel 50/50 - Femme - Abricot 50% coton, 50% polyester',
-    soldOut: true,
-    nameYourPrice: false,
-    offerMore: false,
-    url: 'http://musique.coeurdepirate.com/album/blonde',
-    format: 'T-Shirt/Apparel',
-    name: 'T-shirt - Mon beau navire - Abricot - Femme T-Shirt/Apparel',
-    imageUrls:
-     [ 'http://f4.bcbits.com/img/0000119146_38.jpg',
-       'http://f4.bcbits.com/img/0000138375_38.jpg' ],
-    priceInCents: null,
-    currency: null,
     artist: 'Cœur de pirate' } ]
-*/
+*/ 

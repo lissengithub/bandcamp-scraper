@@ -100,7 +100,7 @@ bandcamp.search(params, function (error, searchResults) {
 })
 ```
 
-[View example with output](examples/search.js).
+[View example with output](examples/search.ts).
 
 ### `getAlbumsWithTag(params, callback)`
 
@@ -132,7 +132,7 @@ bandcamp.getAlbumsWithTag(params, function (error, tagResults) {
 })
 ```
 
-[View example with output](examples/tag.js).
+[View example with output](examples/getAlbumsWithTag.ts).
 
 ### `getAlbumUrls(artistUrl, callback)`
 
@@ -157,7 +157,7 @@ bandcamp.getAlbumUrls(artistUrl, function (error, albumUrls) {
 })
 ```
 
-[View example with output](examples/getAlbumUrls.js).
+[View example with output](examples/getAlbumUrls.ts).
 
 ### `getAlbumProducts(albumUrl, callback)`
 
@@ -185,7 +185,7 @@ bandcamp.getAlbumProducts(albumUrl, function (error, albumProducts) {
 })
 ```
 
-[View example with output](examples/getAlbumProducts.js).
+[View example with output](examples/getAlbumProducts.ts).
 
 ### `getAlbumInfo(albumUrl, callback)`
 
@@ -213,7 +213,7 @@ bandcamp.getAlbumInfo(albumUrl, function (error, albumInfo) {
 })
 ```
 
-[View example with output](examples/getAlbumInfo.js).
+[View example with output](examples/getAlbumInfo.ts).
 
 ### `getArtistUrls(labelUrl, callback)`
 
@@ -237,7 +237,7 @@ bandcamp.getArtistUrls(labelUrl, function (error, artistsUrls) {
 })
 ```
 
-[View example with output](examples/getArtistUrls.js).
+[View example with output](examples/getArtistsUrls.ts).
 
 ### `getArtistInfo(artistUrl, callback)`
 
@@ -264,7 +264,7 @@ bandcamp.getArtistInfo(artistUrl, function (error, artistInfo) {
 })
 ```
 
-[View example with output](examples/getArtistInfo.js).
+[View example with output](examples/getArtistInfo.ts).
 
 ### `getTrackInfo(trackUrl, callback)`
 
@@ -291,7 +291,7 @@ bandcamp.getTrackInfo(trackUrl, function (error, trackInfo) {
 })
 ```
 
-[View example with output](examples/getTrackInfo.js).
+[View example with output](examples/getTrackInfo.ts).
 
 ### `hasMerch(artistUrl, callback)`
 
@@ -347,7 +347,7 @@ bandcamp.getMerch(artistUrl, function (error, merchItems) {
 })
 ```
 
-[View example with output](examples/merch-example.js).
+[View example with output](examples/merch-example.ts).
 
 ## Development
 
