@@ -327,6 +327,8 @@ npm run dev
 - `npm run build` - Compile TypeScript to JavaScript
 - `npm run dev` - Watch mode for development
 - `npm test` - Run tests (builds first)
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:coverage` - Run tests with coverage report
 - `npm run lint` - Run linter
 - `npm run lint-fix` - Fix linting issues
 
