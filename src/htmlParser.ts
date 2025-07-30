@@ -484,178 +484,52 @@ export function parseAlbumProducts(
 // Check if merch is available
 export function hasMerch(html: string): boolean {
   const $ = cheerio.load(html);
-  // Look for merch items or merch-related content
-  const merchItems = $(
-    '.merch-item, .buyItem, [data-item-type="merch"], .merchandise-item'
-  ).length;
-  const merchSection = $('.merch, .merchandise, [data-section="merch"]').length;
-  const merchText = $('body').text().toLowerCase().includes('merch');
-  return merchItems > 0 || merchSection > 0 || merchText;
+  // look for a merch anchor tag <a href="/merch">merch</a>
+  const merchAnchor = $('a[href*="/merch"]').length;
+  return merchAnchor > 0;
 }
 
 // Parse merch items
-export function parseMerch(html: string, merchUrl: string): MerchItem[] {
+export function parseMerchInfo(html: string, artistUrl: string): MerchItem[] {
   const $ = cheerio.load(html);
-
-  const merchItems: MerchItem[] = [];
-
-  // Look for merch items by finding price elements and working backwards
-  $('*').each(function (this: any) {
-    const $element = $(this);
-    const text = $element.text().trim();
-
-    // Look for price patterns (including "Sold Out")
-    if (text.match(/^(£|€|\$)\s*\d+/) || text.toLowerCase() === 'sold out') {
-      const $parent = $element.parent();
-      const $container = $parent.closest('div, li, article');
-
-      if ($container.length > 0) {
-        // Find the title by looking for nearby text elements
-        let title = '';
-        let type = 'Merchandise';
-        let status =
-          text.toLowerCase() === 'sold out' ? 'Sold Out' : 'Available';
-
-        // Look for title in nearby elements
-        const $titleElement = $container
-          .find('h1, h2, h3, h4, .title, strong, b')
-          .first();
-        if ($titleElement.length > 0) {
-          title = $titleElement.text().trim();
-        } else {
-          // Try to find title in the container's direct text content
-          const containerText = $container.text().trim();
-          const lines = containerText
-            .split('\n')
-            .map((line: string) => line.trim())
-            .filter((line: string) => line.length > 0);
-          if (lines.length > 0) {
-            title = lines[0];
+  const data = scrapeIt.scrapeHTML($, {
+    merchItems: {
+      listItem: '.merch-grid-item',
+      data: {
+        price: { 
+          selector: 'span.price, .sold-out',
+          convert: function (price: string) {
+            return price ? price.trim() : undefined;
           }
-        }
-
-        // Look for type/category
-        const $typeElement = $container.find('.type, .category, small').first();
-        if ($typeElement.length > 0) {
-          type = $typeElement.text().trim();
-        }
-
-        // Check for sold out status in the entire container
-        const containerText = $container.text().toLowerCase();
-        if (containerText.includes('sold out')) {
-          status = 'Sold Out';
-        }
-
-        // Only add if we have a reasonable title and it's not already added
-        if (
-          title &&
-          title.length > 3 &&
-          title.length < 200 &&
-          !title.includes('<!DOCTYPE') &&
-          !title.includes('<html') &&
-          !merchItems.some((item) => item.title === title)
-        ) {
-          const imageUrl = $container.find('img').first().attr('src');
-          const url = $container.find('a').first().attr('href');
-
-          const merchItem = {
-            title: title,
-            type: type,
-            price: text.toLowerCase() === 'sold out' ? '' : text,
-            status: status,
-            imageUrl: imageUrl,
-            url: url ? new urlHelper.URL(url, merchUrl).toString() : merchUrl,
-          };
-
-          // Validate against JSON schema
-          if (ajv.validate('merch-item', merchItem)) {
-            merchItems.push(merchItem);
-          } else {
-            console.error(
-              'Validation error on merch item: ',
-              ajv.errorsText(),
-              merchItem,
-              ajv.errors
-            );
-          }
-        }
+        },
+        url: {
+          selector: 'a',
+          attr: 'href',
+          convert(href: string) {
+            if (!href) return null;
+            return new urlHelper.URL(href, artistUrl).toString();
+          },
+        },
       }
     }
   });
+  // Convert the scraped data to MerchItem objects with only price information
+  const merchItems: MerchItem[] = data.merchItems
+    .filter((item: any) => item.price) // Only include items with prices
+    .map((item: any, index: number) => ({
+      title: `Merch Item ${index + 1}`, // Default title to satisfy schema requirement
+      type: 'Merchandise', // Default type to satisfy schema requirement
+      price: item.price,
+      url: item.url,
+    }));
 
-  // Also look for items that might not have prices but are clearly merch
-  $('*').each(function (this: any) {
-    const $element = $(this);
-    const text = $element.text().trim();
-
-    // Look for T-shirt, Apparel, or other merch keywords
-    if (
-      text.toLowerCase().includes('t-shirt') ||
-      text.toLowerCase().includes('apparel') ||
-      text.toLowerCase().includes('merch') ||
-      text.toLowerCase().includes('clothing')
-    ) {
-      const $parent = $element.parent();
-      const $container = $parent.closest('div, li, article');
-
-      if ($container.length > 0) {
-        let title = '';
-        let type = 'Merchandise';
-        let status = 'Available';
-
-        // Look for title
-        const $titleElement = $container
-          .find('h1, h2, h3, h4, .title, strong, b')
-          .first();
-        if ($titleElement.length > 0) {
-          title = $titleElement.text().trim();
-        }
-
-        // Check if this item is already in our list
-        if (title && !merchItems.some((item) => item.title === title)) {
-          const containerText = $container.text().toLowerCase();
-          if (containerText.includes('sold out')) {
-            status = 'Sold Out';
-          }
-
-          const imageUrl = $container.find('img').first().attr('src');
-          const url = $container.find('a').first().attr('href');
-
-          const merchItem = {
-            title: title,
-            type: type,
-            price: '',
-            status: status,
-            imageUrl: imageUrl,
-            url: url ? new urlHelper.URL(url, merchUrl).toString() : merchUrl,
-          };
-
-          // Validate against JSON schema
-          if (ajv.validate('merch-item', merchItem)) {
-            merchItems.push(merchItem);
-          } else {
-            console.error(
-              'Validation error on merch item: ',
-              ajv.errorsText(),
-              merchItem,
-              ajv.errors
-            );
-          }
-        }
-      }
+  // Validate each item through JSON schema
+  return merchItems.filter((item: MerchItem) => {
+    if (ajv.validate('merch-item', item)) {
+      return true;
+    } else {
+      console.error('Validation error on merch item: ', ajv.errorsText(), item);
+      return false;
     }
   });
-
-  // Remove duplicates and filter out invalid items
-  const uniqueItems = merchItems.filter(
-    (item, index, self) =>
-      index === self.findIndex((t) => t.title === item.title) &&
-      item.title.length > 3 &&
-      !item.title.includes('<!DOCTYPE') &&
-      !item.title.includes('<html') &&
-      !item.title.includes('{') &&
-      !item.title.includes('}')
-  );
-
-  return uniqueItems;
 }

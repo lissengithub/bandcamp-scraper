@@ -9,7 +9,6 @@ import {
   TagResult,
   AlbumInfo,
   AlbumProduct, 
-  ArtistInfo, 
   TrackInfo,
   MerchItem,
   Callback 
@@ -108,13 +107,13 @@ export function hasMerch(artistUrl: string, cb: Callback<boolean>): void {
   })
 }
 
-export function getMerch(artistUrl: string, cb: Callback<MerchItem[]>): void {
+export function getMerchInfo(artistUrl: string, cb: Callback<MerchItem[]>): void {
   const merchUrl = new urlHelper.URL('/merch', artistUrl).toString()
   req(merchUrl, function (error: Error | null, html: string) {
     if (error) {
       cb(error, null)
     } else {
-      const merchItems = htmlParser.parseMerch(html, merchUrl)
+      const merchItems = htmlParser.parseMerchInfo(html, merchUrl)
       cb(null, merchItems)
     }
   })
