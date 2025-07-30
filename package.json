@@ -2,11 +2,15 @@
   "name": "bandcamp-scraper",
   "version": "1.5.0",
   "description": "A scraper for https://bandcamp.com",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "standard && jasmine",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "npm run build && jasmine",
     "lint": "standard",
-    "lint-fix": "standard --fix"
+    "lint-fix": "standard --fix",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -19,8 +23,12 @@
   },
   "homepage": "https://github.com/masterT/bandcamp-scraper",
   "devDependencies": {
+    "@types/jasmine": "^4.3.0",
+    "@types/node": "^20.0.0",
     "jasmine": "^2.8.0",
-    "standard": "^16.0.3"
+    "standard": "^16.0.3",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
   },
   "dependencies": {
     "ajv": "^4.11.8",

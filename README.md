@@ -29,6 +29,42 @@ Because Bandcamp has shut down their public API and don't plan to reopen it.
 npm i --save bandcamp-scraper
 ```
 
+## TypeScript Support
+
+This project is now written in TypeScript and provides full type definitions. The compiled JavaScript is available in the `dist` directory.
+
+### TypeScript Usage
+
+```typescript
+import { search, getAlbumInfo, SearchParams, AlbumInfo } from 'bandcamp-scraper';
+
+const searchParams: SearchParams = {
+  query: 'Mac DeMarco',
+  page: 1
+};
+
+search(searchParams, (error: Error | null, results: any) => {
+  if (error) {
+    console.error('Search error:', error);
+    return;
+  }
+  
+  console.log(`Found ${results.length} results`);
+});
+```
+
+### Available Types
+
+- `SearchParams` - Parameters for search function
+- `TagParams` - Parameters for tag search function
+- `SearchResult` - Search result object
+- `TagResult` - Tag search result object
+- `AlbumInfo` - Album information object
+- `TrackInfo` - Track information object
+- `ArtistInfo` - Artist information object
+- `AlbumProduct` - Album product object
+- `Callback<T>` - Generic callback type
+
 ## Usage
 
 ### `search(params, callback)`
@@ -253,6 +289,46 @@ bandcamp.getTrackInfo(trackUrl, function (error, trackInfo) {
   }
 })
 ```
+
+[View example with output](examples/getTrackInfo.js).
+
+## Development
+
+This project is written in TypeScript. To work on the codebase:
+
+### Prerequisites
+
+- Node.js (version 14 or higher)
+- npm
+
+### Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Build TypeScript to JavaScript
+npm run build
+
+# Watch for changes during development
+npm run dev
+```
+
+### Project Structure
+
+- `src/` - TypeScript source files
+- `dist/` - Compiled JavaScript files (generated)
+- `schemas/` - JSON schemas for validation
+- `examples/` - Usage examples
+- `spec/` - Test files
+
+### Available Scripts
+
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm run dev` - Watch mode for development
+- `npm test` - Run tests (builds first)
+- `npm run lint` - Run linter
+- `npm run lint-fix` - Fix linting issues
 
 ## Test
 
