@@ -9,10 +9,13 @@
     "dev": "tsc --watch",
     "test": "npm run build && vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "vitest --coverage",
     "lint": "standard",
     "lint-fix": "standard --fix",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "example:album": "ts-node examples/getAlbumInfo.ts",
+    "example:search": "ts-node examples/search.ts",
+    "example:merch": "ts-node examples/merch-example.ts"
   },
   "repository": {
     "type": "git",
@@ -27,6 +30,7 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "standard": "^16.0.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.0.0",
     "vitest": "^1.6.1"
   },

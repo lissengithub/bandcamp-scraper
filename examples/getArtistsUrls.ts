@@ -1,4 +1,4 @@
-import { getArtistUrls } from '../dist/index'
+import { getArtistUrls } from '../src/index'
 
 const labelUrl = 'https://randsrecords.bandcamp.com'
 getArtistUrls(labelUrl, function (error: Error | null, artistsUrls: string[] | null) {

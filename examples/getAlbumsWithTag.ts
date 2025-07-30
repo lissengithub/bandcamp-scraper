@@ -1,4 +1,4 @@
-import { getAlbumsWithTag, TagParams, TagResult } from '../dist/index'
+import { getAlbumsWithTag, TagParams, TagResult } from '../src/index'
 
 const params: TagParams = {
   tag: 'nuwrld',

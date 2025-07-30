@@ -42,9 +42,10 @@ export interface AlbumInfo {
     numMinutes?: number;
     description?: string;
     tracks?: TrackInfo[];
+    raw?: any;
 }
 export interface TrackInfo {
-    title: string;
+    name: string;
     duration?: string;
     url?: string;
 }

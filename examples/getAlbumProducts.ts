@@ -1,4 +1,4 @@
-import { getAlbumProducts, AlbumProduct } from '../dist/index'
+import { getAlbumProducts, AlbumProduct } from '../src/index'
 
 const albumUrl = 'http://musique.coeurdepirate.com/album/blonde'
 getAlbumProducts(albumUrl, function (error: Error | null, albumProducts: AlbumProduct[] | null) {
