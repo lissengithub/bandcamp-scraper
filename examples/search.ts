@@ -1,4 +1,4 @@
-import { search, SearchParams, SearchResult } from '../dist/index'
+import { search, SearchParams, SearchResult } from '../src/index'
 
 const params: SearchParams = {
   query: 'Coeur de pirate',

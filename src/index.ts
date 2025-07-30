@@ -85,17 +85,6 @@ export function getArtistUrls(labelUrl: string, cb: Callback<string[]>): void {
   })
 }
 
-export function getArtistInfo(artistUrl: string, cb: Callback<ArtistInfo>): void {
-  req(artistUrl, function (error: Error | null, html: string) {
-    if (error) {
-      cb(error, null)
-    } else {
-      const artistInfo = htmlParser.parseArtistInfo(html, artistUrl)
-      cb(null, artistInfo)
-    }
-  })
-}
-
 export function getTrackInfo(trackUrl: string, cb: Callback<TrackInfo>): void {
   req(trackUrl, function (error: Error | null, html: string) {
     if (error) {

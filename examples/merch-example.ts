@@ -1,4 +1,4 @@
-import { hasMerch, getMerch, MerchItem } from '../dist/index'
+import { hasMerch, getMerch, MerchItem } from '../src/index'
 
 const artistUrl = 'https://frenetikglasgow.bandcamp.com'
 

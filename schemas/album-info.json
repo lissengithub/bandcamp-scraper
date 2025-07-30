@@ -12,12 +12,7 @@
       "required": [ "name" ]
     },
     "tag": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": { "type": "string" }
-      },
-      "required": [ "name" ]
+      "type": "string"
     }
   },
   "title" : "album-info",

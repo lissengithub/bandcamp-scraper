@@ -1,4 +1,4 @@
-import { getTrackInfo, TrackInfo } from '../dist/index'
+import { getTrackInfo, TrackInfo } from '../src/index'
 
 const trackUrl = 'https://dafnez.bandcamp.com/track/serenade'
 getTrackInfo(trackUrl, function (error: Error | null, trackInfo: TrackInfo | null) {
@@ -11,7 +11,7 @@ getTrackInfo(trackUrl, function (error: Error | null, trackInfo: TrackInfo | nul
 
 /*
 {
-  title: 'Serenade',
+  name: 'Serenade',
   duration: '03:45',
   url: 'https://dafnez.bandcamp.com/track/serenade'
 }

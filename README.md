@@ -61,7 +61,6 @@ search(searchParams, (error: Error | null, results: any) => {
 - `TagResult` - Tag search result object
 - `AlbumInfo` - Album information object
 - `TrackInfo` - Track information object
-- `ArtistInfo` - Artist information object
 - `AlbumProduct` - Album product object
 - `MerchItem` - Merchandise item object
 - `Callback<T>` - Generic callback type
@@ -239,32 +238,6 @@ bandcamp.getArtistUrls(labelUrl, function (error, artistsUrls) {
 
 [View example with output](examples/getArtistsUrls.ts).
 
-### `getArtistInfo(artistUrl, callback)`
-
-Retrieves the artist's info from its URL.
-
-- artistUrl _String_
-- callback _Function(error, artistInfo)_
-
-#### Artist Info
-
-An _Object_ that represents the artist's info. It matches the [artist-info JSON schema](/schemas/artist-info.json).
-#### Example
-
-```js
-const bandcamp = require('bandcamp-scraper')
-
-const artistUrl = 'http://musique.coeurdepirate.com'
-bandcamp.getArtistInfo(artistUrl, function (error, artistInfo) {
-  if (error) {
-    console.log(error)
-  } else {
-    console.log(artistInfo)
-  }
-})
-```
-
-[View example with output](examples/getArtistInfo.ts).
 
 ### `getTrackInfo(trackUrl, callback)`
 

@@ -44,7 +44,6 @@ exports.parseArtistUrls = parseArtistUrls;
 exports.extractJavascriptObjectVariable = extractJavascriptObjectVariable;
 exports.parseAlbumInfo = parseAlbumInfo;
 exports.parseTrackInfo = parseTrackInfo;
-exports.parseArtistInfo = parseArtistInfo;
 exports.parseAlbumProducts = parseAlbumProducts;
 exports.hasMerch = hasMerch;
 exports.parseMerch = parseMerch;
@@ -53,7 +52,7 @@ const scrapeIt = __importStar(require("scrape-it"));
 const urlHelper = __importStar(require("url"));
 const linez_1 = __importDefault(require("linez"));
 const ajv_1 = __importDefault(require("ajv"));
-const JSON5 = __importStar(require("json5"));
+const json5_1 = __importDefault(require("json5"));
 // add search-result Schema
 const ajv = new ajv_1.default();
 ajv.addSchema(require('../schemas/search-result.json'), 'search-result');
@@ -61,25 +60,30 @@ ajv.addSchema(require('../schemas/album-product.json'), 'album-product');
 ajv.addSchema(require('../schemas/album-info.json'), 'album-info');
 ajv.addSchema(require('../schemas/tag-result.json'), 'tag-result');
 ajv.addSchema(require('../schemas/track-info.json'), 'track-info');
-ajv.addSchema(require('../schemas/merch-item.json'), 'merch-item');
+// ajv.addSchema(require('../schemas/merch-item.json'), 'merch-item');
 linez_1.default.configure({
-    newlines: ['\n', '\r\n', '\r']
+    newlines: ['\n', '\r\n', '\r'],
 });
-const removeMultipleSpace = function (text) {
+function removeMultipleSpace(text) {
     return text.replace(/\s{2,}/g, ' ');
-};
-const removeNewLine = function (text) {
-    const lines = (0, linez_1.default)(text).lines.map(function (line) {
+}
+;
+function removeNewLine(text) {
+    text = (0, linez_1.default)(text)
+        .lines.map(function (line) {
         return line.text.trim();
-    }).join(' ');
-    return removeMultipleSpace(lines);
-};
-const assignProps = function (objFrom, objTo, propNames) {
+    })
+        .join(' ');
+    return removeMultipleSpace(text);
+}
+;
+function assignProps(objFrom, objTo, propNames) {
     propNames.forEach(function (propName) {
         objTo[propName] = objFrom[propName];
     });
     return objTo;
-};
+}
+;
 // parse search results
 function parseSearchResults(html) {
     const $ = cheerio_1.default.load(html);
@@ -91,7 +95,7 @@ function parseSearchResults(html) {
                     selector: '.itemtype',
                     convert: function (text) {
                         return text.toLowerCase();
-                    }
+                    },
                 },
                 name: { selector: '.heading' },
                 url: { selector: '.itemurl' },
@@ -101,52 +105,58 @@ function parseSearchResults(html) {
                     convert: function (text) {
                         const tags = text.replace('tags:', '').replace(/\s/g, '');
                         return tags.length > 1 ? tags.split(',') : [];
-                    }
+                    },
                 },
                 genre: {
                     selector: '.genre',
                     convert: function (text) {
                         return removeMultipleSpace(text.replace('genre:', ''));
-                    }
+                    },
                 },
                 subhead: {
                     selector: '.subhead',
                     convert: function (text) {
                         return removeMultipleSpace(text);
-                    }
+                    },
                 },
                 releaseDate: {
                     selector: '.released',
                     convert: function (text) {
                         return text.replace('released ', '');
-                    }
+                    },
                 },
                 numTracks: {
                     selector: '.length',
-                    convert: function (text) {
+                    convert(text) {
                         const info = text.split(',');
                         if (info.length === 2) {
                             return parseInt(info[0].replace(' tracks', ''));
                         }
-                        return undefined;
-                    }
+                        return null;
+                    },
                 },
                 numMinutes: {
                     selector: '.length',
-                    convert: function (text) {
+                    convert(text) {
                         const info = text.split(',');
                         if (info.length === 2) {
                             return parseInt(info[1].replace(' minutes', ''));
                         }
-                        return undefined;
-                    }
-                }
-            }
-        }
+                        return null;
+                    },
+                },
+            },
+        },
     });
     return data.results.reduce(function (results, result) {
         // basic properties
-        let object = assignProps(result, {}, ['type', 'name', 'url', 'imageUrl', 'tags']);
+        let object = assignProps(result, {}, [
+            'type',
+            'name',
+            'url',
+            'imageUrl',
+            'tags',
+        ]);
         // specific properties
         switch (result.type) {
             case 'artist':
@@ -157,7 +167,11 @@ function parseSearchResults(html) {
                 break;
             case 'album':
                 // album's specific properties
-                object = assignProps(result, object, ['releaseDate', 'numTracks', 'numMinutes']);
+                object = assignProps(result, object, [
+                    'releaseDate',
+                    'numTracks',
+                    'numMinutes',
+                ]);
                 // artist
                 object.artist = result.subhead.replace('by ', '').trim();
                 break;
@@ -168,7 +182,9 @@ function parseSearchResults(html) {
                 if (result.subhead) {
                     const info = result.subhead.trim().split(' by ');
                     if (info.length > 0) {
-                        object.album = removeNewLine(info[0]).replace('location', '').replace(/^from /, '');
+                        object.album = removeNewLine(info[0])
+                            .replace('location', '')
+                            .replace(/^from /, '');
                         info.shift();
                         object.artist = removeNewLine(info.join(' by '));
                     }
@@ -183,7 +199,8 @@ function parseSearchResults(html) {
         if (ajv.validate('search-result', object)) {
             results.push(object);
         }
-        else { // TODO add a flag to log only when debugging
+        else {
+            // TODO add a flag to log only when debugging
             console.error('Validation error on search result: ', ajv.errorsText(), object, ajv.errors);
         }
         return results;
@@ -194,10 +211,10 @@ function extractAlbumUrlsFromDataBlob(html) {
     const data = scrapeIt.scrapeHTML($, {
         data: {
             selector: '#pagedata',
-            attr: 'data-blob'
-        }
+            attr: 'data-blob',
+        },
     });
-    const jsonRaw = JSON5.parse(data.data);
+    const jsonRaw = json5_1.default.parse(data.data);
     const albums = [];
     for (const collection of jsonRaw.hub.tabs[0].collections) {
         for (const item of collection.items) {
@@ -205,7 +222,7 @@ function extractAlbumUrlsFromDataBlob(html) {
                 name: item.title,
                 artist: item.artist,
                 url: item.tralbum_url,
-                artist_url: item.band_url
+                artist_url: item.band_url,
             };
             albums.push(album);
         }
@@ -216,7 +233,12 @@ function extractAlbumUrlsFromDataBlob(html) {
 function parseTagResults(html) {
     const data = { results: extractAlbumUrlsFromDataBlob(html) };
     return data.results.reduce(function (results, result) {
-        const object = assignProps(result, {}, ['name', 'artist', 'url', 'artist_url']);
+        const object = assignProps(result, {}, [
+            'name',
+            'artist',
+            'url',
+            'artist_url',
+        ]);
         if (ajv.validate('tag-result', object)) {
             results.push(object);
         }
@@ -235,21 +257,24 @@ function parseAlbumUrls(html, artistUrl) {
             data: {
                 url: {
                     attr: 'href',
-                    convert: function (href) {
+                    convert(href) {
                         if (/^\/(track|album)\/(.+)$/.exec(href)) {
                             return new urlHelper.URL(href, artistUrl).toString();
                         }
                         return undefined;
-                    }
-                }
+                    },
+                },
+            },
+        },
+    });
+    return data.albumLinks.reduce(function (albumUrls, albumLink) {
+        const url = albumLink.url;
+        if (url) {
+            if (albumUrls.indexOf(url) === -1) {
+                albumUrls.push(url);
             }
         }
-    });
-    return data.albumLinks.reduce(function (urls, link) {
-        if (link.url) {
-            urls.push(link.url);
-        }
-        return urls;
+        return albumUrls;
     }, []);
 }
 // parse artist urls
@@ -261,104 +286,164 @@ function parseArtistUrls(html, labelUrl) {
             data: {
                 url: {
                     attr: 'href',
-                    convert: function (href) {
-                        if (/^\/artist\/(.+)$/.exec(href)) {
+                    convert(href) {
+                        if (/tab=artists*$/.exec(href)) {
                             return new urlHelper.URL(href, labelUrl).toString();
                         }
                         return undefined;
-                    }
-                }
+                    },
+                },
+            },
+        },
+    });
+    return data.artistLinks.reduce(function (artistUrls, artistLink) {
+        const url = artistLink.url;
+        if (url) {
+            if (artistUrls.indexOf(url) === -1) {
+                artistUrls.push(url);
             }
         }
-    });
-    return data.artistLinks.reduce(function (urls, link) {
-        if (link.url) {
-            urls.push(link.url);
-        }
-        return urls;
+        return artistUrls;
     }, []);
 }
+;
 function extractJavascriptObjectVariable(html, variableName) {
-    const regex = new RegExp(variableName + '\\s*=\\s*({.+?});', 's');
-    const match = html.match(regex);
-    return match ? JSON5.parse(match[1]) : null;
+    const regex = new RegExp('var ' + variableName + '\\s*=\\s*(\\{[\\s\\S]*?\\})\\s*;');
+    const matches = html.match(regex);
+    if (matches && matches.length === 2) {
+        return matches[1];
+    }
+    return undefined;
 }
 function parseAlbumInfo(html, albumUrl) {
     const $ = cheerio_1.default.load(html);
+    console.log('Is it happening here???!?!??!?!');
     const data = scrapeIt.scrapeHTML($, {
-        title: { selector: 'h2.trackTitle' },
-        artist: { selector: 'h3.byArtist a' },
-        imageUrl: { selector: '.popupImage img', attr: 'src' },
-        genre: { selector: '.genre' },
-        tags: {
-            selector: '.tag',
-            listItem: 'a',
-            convert: function (text) {
-                return text.trim();
-            }
-        },
-        releaseDate: { selector: '.tralbumData .released' },
-        numTracks: {
-            selector: '.tralbumData .length',
-            convert: function (text) {
-                const match = text.match(/(\d+) tracks/);
-                return match ? parseInt(match[1]) : undefined;
-            }
-        },
-        numMinutes: {
-            selector: '.tralbumData .length',
-            convert: function (text) {
-                const match = text.match(/(\d+) minutes/);
-                return match ? parseInt(match[1]) : undefined;
-            }
-        },
-        description: { selector: '.tralbumAbout' },
-        tracks: {
-            listItem: '.track_list .track_row_view',
+        album: {
+            selector: 'body',
             data: {
-                title: { selector: '.title' },
-                duration: { selector: '.time' },
-                url: {
-                    selector: 'a',
-                    attr: 'href',
-                    convert: function (href) {
-                        return new urlHelper.URL(href, albumUrl).toString();
-                    }
+                artist: { selector: '#name-section span' },
+                title: { selector: '#name-section .trackTitle' },
+                imageUrl: {
+                    selector: '#tralbumArt img',
+                    attr: 'src',
+                    convert(src) {
+                        if (src) {
+                            return src.replace(/_\d{1,3}\./, '_2.'); // use small version
+                        }
+                        return undefined;
+                    },
+                },
+                tags: {
+                    listItem: '.tag',
+                    data: {
+                        name: {
+                            convert: function (tag) {
+                                return tag;
+                            },
+                        },
+                    },
+                },
+                tracks: {
+                    listItem: 'table#track_table tr.track_row_view',
+                    data: {
+                        name: {
+                            selector: 'span.track-title',
+                        },
+                        url: {
+                            selector: '.info_link a',
+                            attr: 'href',
+                            convert(href) {
+                                if (!href)
+                                    return null;
+                                return new urlHelper.URL(href, albumUrl).toString();
+                            },
+                        },
+                        duration: {
+                            selector: '.time',
+                            convert(duration) {
+                                if (!duration)
+                                    return null;
+                                return duration;
+                            },
+                        },
+                    },
+                },
+                nonPlayableTracks: {
+                    listItem: 'table#track_table tr.track_row_view',
+                    data: {
+                        name: {
+                            selector: '.title>span:not(.time)',
+                        },
+                    },
+                },
+            },
+        },
+    });
+    console.log('BANDCAMP-PARSER DATA:', JSON.stringify(data, null, 2));
+    for (const nonPlayableTrack of data.album.nonPlayableTracks) {
+        data.album.tracks.push(nonPlayableTrack);
+    }
+    const object = assignProps(data.album, {}, [
+        'tags',
+        'artist',
+        'title',
+        'imageUrl',
+        'tracks',
+    ]);
+    // Remove undefined/null properties.
+    // remove non-playable tracks that would have been caught in "tracks" (in case of preview albums)
+    object.tracks = object.tracks.filter((x) => x.name !== '');
+    for (let i = 0; i < object.tracks.length; i++) {
+        // Remove tracks properties.
+        for (const key in object.tracks[i]) {
+            if (Object.prototype.hasOwnProperty.call(object.tracks[i], key)) {
+                if (!object.tracks[i][key]) {
+                    delete object.tracks[i][key];
                 }
             }
         }
-    });
-    const albumInfo = {
-        title: data.title,
-        artist: data.artist,
-        url: albumUrl,
-        imageUrl: data.imageUrl,
-        genre: data.genre,
-        tags: data.tags || [],
-        releaseDate: data.releaseDate,
-        numTracks: data.numTracks,
-        numMinutes: data.numMinutes,
-        description: data.description,
-        tracks: data.tracks || []
-    };
-    if (ajv.validate('album-info', albumInfo)) {
-        return albumInfo;
+    }
+    // Parse raw.
+    const scriptWithRaw = $('script[data-tralbum]');
+    if (scriptWithRaw.length > 0) {
+        object.raw = scriptWithRaw.data('tralbum');
     }
     else {
-        console.error('Validation error on album info: ', ajv.errorsText(), albumInfo, ajv.errors);
-        return albumInfo;
+        let raw = extractJavascriptObjectVariable(html, 'TralbumData');
+        // The only javascript in the variable is the concatenation of the base url
+        // with the current album path. We nned to do it yourself.
+        // Ex:
+        //  url: "http://musique.coeurdepirate.com" + "/album/blonde",
+        raw = raw ? raw.replace('" + "', '') : '';
+        try {
+            object.raw = json5_1.default.parse(raw);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+    object.url = albumUrl;
+    // validate through JSON schema
+    if (ajv.validate('album-info', object)) {
+        return object;
+    }
+    else {
+        // TODO add a flag to log only when debugging
+        console.error('Validation error on album info: ', ajv.errorsText(), object);
+        return null;
     }
 }
 function parseTrackInfo(html, trackUrl) {
     const $ = cheerio_1.default.load(html);
     const data = scrapeIt.scrapeHTML($, {
-        title: { selector: 'h2.trackTitle' },
-        duration: { selector: '.time' }
+        name: { selector: 'h2.trackTitle' },
+        duration: { selector: '.time' },
     });
     const trackInfo = {
-        title: data.title,
+        name: data.name,
         duration: data.duration,
-        url: trackUrl
+        url: trackUrl,
     };
     if (ajv.validate('track-info', trackInfo)) {
         return trackInfo;
@@ -367,47 +452,6 @@ function parseTrackInfo(html, trackUrl) {
         console.error('Validation error on track info: ', ajv.errorsText(), trackInfo, ajv.errors);
         return trackInfo;
     }
-}
-function parseArtistInfo(html, artistUrl) {
-    const $ = cheerio_1.default.load(html);
-    const data = scrapeIt.scrapeHTML($, {
-        name: { selector: 'h2.artist' },
-        imageUrl: { selector: '.popupImage img', attr: 'src' },
-        genre: { selector: '.genre' },
-        tags: {
-            selector: '.tag',
-            listItem: 'a',
-            convert: function (text) {
-                return text.trim();
-            }
-        },
-        description: { selector: '.bioText' },
-        location: { selector: '.location' },
-        albums: {
-            listItem: '.album',
-            data: {
-                title: { selector: '.title' },
-                url: {
-                    selector: 'a',
-                    attr: 'href',
-                    convert: function (href) {
-                        return new urlHelper.URL(href, artistUrl).toString();
-                    }
-                }
-            }
-        }
-    });
-    const artistInfo = {
-        name: data.name,
-        url: artistUrl,
-        imageUrl: data.imageUrl,
-        genre: data.genre,
-        tags: data.tags || [],
-        description: data.description,
-        location: data.location,
-        albums: data.albums || []
-    };
-    return artistInfo;
 }
 function parseAlbumProducts(html, albumUrl) {
     const $ = cheerio_1.default.load(html);
@@ -423,17 +467,17 @@ function parseAlbumProducts(html, albumUrl) {
                     attr: 'href',
                     convert: function (href) {
                         return new urlHelper.URL(href, albumUrl).toString();
-                    }
-                }
-            }
-        }
+                    },
+                },
+            },
+        },
     });
     return data.products.reduce(function (products, product) {
         const albumProduct = {
             title: product.title,
             price: product.price,
             type: product.type,
-            url: product.url
+            url: product.url,
         };
         if (ajv.validate('album-product', albumProduct)) {
             products.push(albumProduct);
@@ -471,14 +515,19 @@ function parseMerch(html, merchUrl) {
                 let type = 'Merchandise';
                 let status = text.toLowerCase() === 'sold out' ? 'Sold Out' : 'Available';
                 // Look for title in nearby elements
-                const $titleElement = $container.find('h1, h2, h3, h4, .title, strong, b').first();
+                const $titleElement = $container
+                    .find('h1, h2, h3, h4, .title, strong, b')
+                    .first();
                 if ($titleElement.length > 0) {
                     title = $titleElement.text().trim();
                 }
                 else {
                     // Try to find title in the container's direct text content
                     const containerText = $container.text().trim();
-                    const lines = containerText.split('\n').map((line) => line.trim()).filter((line) => line.length > 0);
+                    const lines = containerText
+                        .split('\n')
+                        .map((line) => line.trim())
+                        .filter((line) => line.length > 0);
                     if (lines.length > 0) {
                         title = lines[0];
                     }
@@ -494,9 +543,12 @@ function parseMerch(html, merchUrl) {
                     status = 'Sold Out';
                 }
                 // Only add if we have a reasonable title and it's not already added
-                if (title && title.length > 3 && title.length < 200 &&
-                    !title.includes('<!DOCTYPE') && !title.includes('<html') &&
-                    !merchItems.some(item => item.title === title)) {
+                if (title &&
+                    title.length > 3 &&
+                    title.length < 200 &&
+                    !title.includes('<!DOCTYPE') &&
+                    !title.includes('<html') &&
+                    !merchItems.some((item) => item.title === title)) {
                     const imageUrl = $container.find('img').first().attr('src');
                     const url = $container.find('a').first().attr('href');
                     const merchItem = {
@@ -505,7 +557,7 @@ function parseMerch(html, merchUrl) {
                         price: text.toLowerCase() === 'sold out' ? '' : text,
                         status: status,
                         imageUrl: imageUrl,
-                        url: url ? new urlHelper.URL(url, merchUrl).toString() : merchUrl
+                        url: url ? new urlHelper.URL(url, merchUrl).toString() : merchUrl,
                     };
                     // Validate against JSON schema
                     if (ajv.validate('merch-item', merchItem)) {
@@ -523,8 +575,10 @@ function parseMerch(html, merchUrl) {
         const $element = $(this);
         const text = $element.text().trim();
         // Look for T-shirt, Apparel, or other merch keywords
-        if (text.toLowerCase().includes('t-shirt') || text.toLowerCase().includes('apparel') ||
-            text.toLowerCase().includes('merch') || text.toLowerCase().includes('clothing')) {
+        if (text.toLowerCase().includes('t-shirt') ||
+            text.toLowerCase().includes('apparel') ||
+            text.toLowerCase().includes('merch') ||
+            text.toLowerCase().includes('clothing')) {
             const $parent = $element.parent();
             const $container = $parent.closest('div, li, article');
             if ($container.length > 0) {
@@ -532,12 +586,14 @@ function parseMerch(html, merchUrl) {
                 let type = 'Merchandise';
                 let status = 'Available';
                 // Look for title
-                const $titleElement = $container.find('h1, h2, h3, h4, .title, strong, b').first();
+                const $titleElement = $container
+                    .find('h1, h2, h3, h4, .title, strong, b')
+                    .first();
                 if ($titleElement.length > 0) {
                     title = $titleElement.text().trim();
                 }
                 // Check if this item is already in our list
-                if (title && !merchItems.some(item => item.title === title)) {
+                if (title && !merchItems.some((item) => item.title === title)) {
                     const containerText = $container.text().toLowerCase();
                     if (containerText.includes('sold out')) {
                         status = 'Sold Out';
@@ -550,7 +606,7 @@ function parseMerch(html, merchUrl) {
                         price: '',
                         status: status,
                         imageUrl: imageUrl,
-                        url: url ? new urlHelper.URL(url, merchUrl).toString() : merchUrl
+                        url: url ? new urlHelper.URL(url, merchUrl).toString() : merchUrl,
                     };
                     // Validate against JSON schema
                     if (ajv.validate('merch-item', merchItem)) {
@@ -564,7 +620,7 @@ function parseMerch(html, merchUrl) {
         }
     });
     // Remove duplicates and filter out invalid items
-    const uniqueItems = merchItems.filter((item, index, self) => index === self.findIndex(t => t.title === item.title) &&
+    const uniqueItems = merchItems.filter((item, index, self) => index === self.findIndex((t) => t.title === item.title) &&
         item.title.length > 3 &&
         !item.title.includes('<!DOCTYPE') &&
         !item.title.includes('<html') &&

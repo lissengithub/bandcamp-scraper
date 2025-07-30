@@ -188,20 +188,6 @@ describe('bandcamp-scraper', () => {
     })
   })
 
-  describe('getArtistInfo', () => {
-    it('scrapes artist info', async () => {
-      const artistUrl = sample(artistUrls)
-      const artistInfo = await promisify<any>((callback) => 
-        bandcamp.getArtistInfo(artistUrl, callback)
-      )
-      
-      console.log('artistUrl', artistUrl)
-      if (artistInfo) console.log('artistInfo', artistInfo)
-      expect(typeof artistInfo).toEqual('object')
-      // TODO validate with JSON schema
-    })
-  })
-
   describe('getTrackInfo', () => {
     it('scrapes track info', async () => {
       const trackUrl = sample(trackUrls)

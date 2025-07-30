@@ -46,10 +46,11 @@ export interface AlbumInfo {
   numMinutes?: number;
   description?: string;
   tracks?: TrackInfo[];
+  raw?: any; // Raw data from Bandcamp API
 }
 
 export interface TrackInfo {
-  title: string;
+  name: string; // Changed from 'title' to 'name' to match actual data
   duration?: string;
   url?: string;
 }

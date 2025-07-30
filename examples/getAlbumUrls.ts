@@ -1,4 +1,4 @@
-import { getAlbumUrls } from '../dist/index'
+import { getAlbumUrls } from '../src/index'
 
 const artistUrl = 'http://musique.coeurdepirate.com/'
 getAlbumUrls(artistUrl, function (error: Error | null, albumUrls: string[] | null) {

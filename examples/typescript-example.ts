@@ -1,4 +1,4 @@
-import { search, getAlbumInfo, SearchParams, AlbumInfo } from '../dist/index';
+import { search, getAlbumInfo, SearchParams, AlbumInfo } from '../src/index';
 
 // Example using TypeScript with proper type checking
 const searchParams: SearchParams = {

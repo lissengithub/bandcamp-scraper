@@ -45,7 +45,6 @@ exports.getAlbumUrls = getAlbumUrls;
 exports.getAlbumInfo = getAlbumInfo;
 exports.getAlbumProducts = getAlbumProducts;
 exports.getArtistUrls = getArtistUrls;
-exports.getArtistInfo = getArtistInfo;
 exports.getTrackInfo = getTrackInfo;
 exports.hasMerch = hasMerch;
 exports.getMerch = getMerch;
@@ -120,17 +119,6 @@ function getArtistUrls(labelUrl, cb) {
         else {
             const artistUrls = htmlParser.parseArtistUrls(html, labelUrl);
             cb(null, artistUrls);
-        }
-    });
-}
-function getArtistInfo(artistUrl, cb) {
-    (0, tinyreq_1.default)(artistUrl, function (error, html) {
-        if (error) {
-            cb(error, null);
-        }
-        else {
-            const artistInfo = htmlParser.parseArtistInfo(html, artistUrl);
-            cb(null, artistInfo);
         }
     });
 }
