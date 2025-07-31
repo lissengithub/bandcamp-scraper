@@ -1,10 +1,10 @@
 import cheerio from 'cheerio';
-import * as scrapeIt from 'scrape-it';
+import scrapeIt from 'scrape-it';
 import * as urlHelper from 'url';
 import linez from 'linez';
 import Ajv from 'ajv';
 import JSON5 from 'json5';
-import { TrackInfo, AlbumProduct, MerchItem, ArtistInfo } from './types';
+import { TrackInfo, AlbumProduct, MerchItem } from './types';
 
 // add search-result Schema
 const ajv = new Ajv();
@@ -21,7 +21,7 @@ linez.configure({
 
 function removeMultipleSpace(text: string): string {
   return text.replace(/\s{2,}/g, ' ');
-};
+}
 
 function removeNewLine(text: string): string {
   text = linez(text)
@@ -30,23 +30,19 @@ function removeNewLine(text: string): string {
     })
     .join(' ');
   return removeMultipleSpace(text);
-};
+}
 
-function assignProps(
-  objFrom: any,
-  objTo: any,
-  propNames: string[]
-): any {
+function assignProps(objFrom: any, objTo: any, propNames: string[]): any {
   propNames.forEach(function (propName) {
     objTo[propName] = objFrom[propName];
   });
   return objTo;
-};
+}
 
 // parse search results
 export function parseSearchResults(html: string) {
   const $ = cheerio.load(html);
-  const data = scrapeIt.scrapeHTML($, {
+  const data = scrapeIt.scrapeHTML<any>($, {
     results: {
       listItem: '.result-items li',
       data: {
@@ -107,6 +103,7 @@ export function parseSearchResults(html: string) {
       },
     },
   });
+
   return data.results.reduce(function (results: any, result: any) {
     // basic properties
     let object = assignProps(result, {}, [
@@ -172,7 +169,7 @@ export function parseSearchResults(html: string) {
 
 export function extractAlbumUrlsFromDataBlob(html: string) {
   const $ = cheerio.load(html);
-  const data = scrapeIt.scrapeHTML($, {
+  const data = scrapeIt.scrapeHTML<{ data: string }>($, {
     data: {
       selector: '#pagedata',
       attr: 'data-blob',
@@ -223,7 +220,7 @@ export function parseTagResults(html: string) {
 // parse album urls
 export function parseAlbumUrls(html: string, artistUrl: string) {
   const $ = cheerio.load(html);
-  const data = scrapeIt.scrapeHTML($, {
+  const data = scrapeIt.scrapeHTML<{ albumLinks: { url: string }[] }>($, {
     albumLinks: {
       listItem: 'a',
       data: {
@@ -239,12 +236,10 @@ export function parseAlbumUrls(html: string, artistUrl: string) {
       },
     },
   });
-  return data.albumLinks.reduce(function (albumUrls: string[], albumLink: any) {
+  return data.albumLinks.reduce(function (albumUrls: string[], albumLink) {
     const url = albumLink.url;
-    if (url) {
-      if (albumUrls.indexOf(url) === -1) {
-        albumUrls.push(url);
-      }
+    if (url && albumUrls.indexOf(url) === -1) {
+      albumUrls.push(url);
     }
     return albumUrls;
   }, []);
@@ -253,7 +248,7 @@ export function parseAlbumUrls(html: string, artistUrl: string) {
 // parse artist urls
 export function parseArtistUrls(html: string, labelUrl: string) {
   const $ = cheerio.load(html);
-  const data = scrapeIt.scrapeHTML($, {
+  const data = scrapeIt.scrapeHTML<{ artistLinks: { url: string }[] }>($, {
     artistLinks: {
       listItem: 'a',
       data: {
@@ -270,16 +265,14 @@ export function parseArtistUrls(html: string, labelUrl: string) {
     },
   });
 
-  return data.artistLinks.reduce(function (artistUrls: any, artistLink: any) {
+  return data.artistLinks.reduce(function (artistUrls: string[], artistLink) {
     const url = artistLink.url;
-    if (url) {
-      if (artistUrls.indexOf(url) === -1) {
-        artistUrls.push(url);
-      }
+    if (url && artistUrls.indexOf(url) === -1) {
+      artistUrls.push(url);
     }
     return artistUrls;
   }, []);
-};
+}
 
 export function extractJavascriptObjectVariable(
   html: string,
@@ -297,7 +290,16 @@ export function extractJavascriptObjectVariable(
 
 export function parseAlbumInfo(html: string, albumUrl: string) {
   const $ = cheerio.load(html);
-  const data = scrapeIt.scrapeHTML($, {
+  const data = scrapeIt.scrapeHTML<{
+    album: {
+      artist: string;
+      title: string;
+      imageUrl: string;
+      tags: string[];
+      tracks: { name: string; url?: string; duration?: string }[];
+      nonPlayableTracks: { name: string }[];
+    };
+  }>($, {
     album: {
       selector: 'body',
       data: {
@@ -408,7 +410,7 @@ export function parseAlbumInfo(html: string, albumUrl: string) {
 
 export function parseTrackInfo(html: string, trackUrl: string): TrackInfo {
   const $ = cheerio.load(html);
-  const data = scrapeIt.scrapeHTML($, {
+  const data = scrapeIt.scrapeHTML<{ name: string; duration: string }>($, {
     name: { selector: 'h2.trackTitle' },
     duration: { selector: '.time' },
   });
@@ -437,7 +439,14 @@ export function parseAlbumProducts(
   albumUrl: string
 ): AlbumProduct[] {
   const $ = cheerio.load(html);
-  const data = scrapeIt.scrapeHTML($, {
+  const data = scrapeIt.scrapeHTML<{
+    products: {
+      title: string;
+      price: string;
+      type: string;
+      url: string;
+    }[];
+  }>($, {
     products: {
       listItem: '.buyItem',
       data: {
@@ -455,10 +464,7 @@ export function parseAlbumProducts(
     },
   });
 
-  return data.products.reduce(function (
-    products: AlbumProduct[],
-    product: any
-  ) {
+  return data.products.reduce(function (products: AlbumProduct[], product) {
     const albumProduct = {
       title: product.title,
       price: product.price,
@@ -477,8 +483,7 @@ export function parseAlbumProducts(
       );
     }
     return products;
-  },
-  []);
+  }, []);
 }
 
 // Check if merch is available
@@ -490,17 +495,22 @@ export function hasMerch(html: string): boolean {
 }
 
 // Parse merch items
-export function parseMerchInfo(html: string, artistUrl: string): MerchItem[] {
+export function parseMerchInfo(html: string, artistUrl: string) {
   const $ = cheerio.load(html);
-  const data = scrapeIt.scrapeHTML($, {
+  const data = scrapeIt.scrapeHTML<{
+    merchItems: {
+      price: string;
+      url: string;
+    }[];
+  }>($, {
     merchItems: {
       listItem: '.merch-grid-item',
       data: {
-        price: { 
+        price: {
           selector: 'span.price, .sold-out',
           convert: function (price: string) {
             return price ? price.trim() : undefined;
-          }
+          },
         },
         url: {
           selector: 'a',
@@ -510,8 +520,8 @@ export function parseMerchInfo(html: string, artistUrl: string): MerchItem[] {
             return new urlHelper.URL(href, artistUrl).toString();
           },
         },
-      }
-    }
+      },
+    },
   });
   // Convert the scraped data to MerchItem objects with only price information
   const merchItems: MerchItem[] = data.merchItems
@@ -524,7 +534,7 @@ export function parseMerchInfo(html: string, artistUrl: string): MerchItem[] {
     }));
 
   // Validate each item through JSON schema
-  return merchItems.filter((item: MerchItem) => {
+  const items = merchItems.filter((item: MerchItem) => {
     if (ajv.validate('merch-item', item)) {
       return true;
     } else {
@@ -532,4 +542,6 @@ export function parseMerchInfo(html: string, artistUrl: string): MerchItem[] {
       return false;
     }
   });
+
+  return items;
 }

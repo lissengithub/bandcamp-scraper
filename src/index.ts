@@ -10,7 +10,6 @@ import {
   AlbumInfo,
   AlbumProduct, 
   TrackInfo,
-  MerchItem,
   Callback 
 } from './types';
 
@@ -107,7 +106,7 @@ export function hasMerch(artistUrl: string, cb: Callback<boolean>): void {
   })
 }
 
-export function getMerchInfo(artistUrl: string, cb: Callback<MerchItem[]>): void {
+export function getMerchInfo(artistUrl: string, cb: Callback<any>): void {
   const merchUrl = new urlHelper.URL('/merch', artistUrl).toString()
   req(merchUrl, function (error: Error | null, html: string) {
     if (error) {
