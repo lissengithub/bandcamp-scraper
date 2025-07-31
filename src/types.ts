@@ -63,10 +63,10 @@ export interface AlbumProduct {
 }
 
 export interface MerchItem {
+  id: string;
   title: string;
   type: string;
   price?: string;
-  status?: string; // "Available", "Sold Out", etc.
   imageUrl?: string;
   url?: string;
 }

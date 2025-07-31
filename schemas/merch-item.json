@@ -3,6 +3,10 @@
   "description": "A merchandise item from a Bandcamp artist page",
   "type": "object",
   "properties": {
+    "id": {
+      "type": "string",
+      "description": "The unique identifier of the merch item"
+    },
     "title": {
       "type": "string",
       "description": "The name/title of the merch item",
@@ -29,10 +33,9 @@
     },
     "url": {
       "type": "string",
-      "description": "Direct link to the merch item page",
-      "format": "uri"
+      "description": "Direct link to the merch item page"
     }
   },
-  "required": ["title", "type"],
+  "required": ["id", "title", "price"],
   "additionalProperties": false
 } 

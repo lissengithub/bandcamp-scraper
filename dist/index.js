@@ -47,7 +47,7 @@ exports.getAlbumProducts = getAlbumProducts;
 exports.getArtistUrls = getArtistUrls;
 exports.getTrackInfo = getTrackInfo;
 exports.hasMerch = hasMerch;
-exports.getMerch = getMerch;
+exports.getMerchInfo = getMerchInfo;
 const tinyreq_1 = __importDefault(require("tinyreq"));
 const urlHelper = __importStar(require("url"));
 const htmlParser = __importStar(require("./htmlParser"));
@@ -145,14 +145,14 @@ function hasMerch(artistUrl, cb) {
         }
     });
 }
-function getMerch(artistUrl, cb) {
+function getMerchInfo(artistUrl, cb) {
     const merchUrl = new urlHelper.URL('/merch', artistUrl).toString();
     (0, tinyreq_1.default)(merchUrl, function (error, html) {
         if (error) {
             cb(error, null);
         }
         else {
-            const merchItems = htmlParser.parseMerch(html, merchUrl);
+            const merchItems = htmlParser.parseMerchInfo(html, artistUrl);
             cb(null, merchItems);
         }
     });

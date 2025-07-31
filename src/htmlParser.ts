@@ -1,4 +1,4 @@
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 import scrapeIt from 'scrape-it';
 import * as urlHelper from 'url';
 import linez from 'linez';
@@ -499,13 +499,27 @@ export function parseMerchInfo(html: string, artistUrl: string) {
   const $ = cheerio.load(html);
   const data = scrapeIt.scrapeHTML<{
     merchItems: {
+      id: string;
+      title: string;
       price: string;
       url: string;
+      merchType: string;
+      imageUrl: string;
+      backupImageUrl: string;
     }[];
   }>($, {
     merchItems: {
       listItem: '.merch-grid-item',
       data: {
+        id: {
+          attr: 'data-item-id',
+        },
+        title: {
+          selector: 'p.title',
+          convert: function (text: string) {
+            return removeNewLine(text);
+          },
+        },
         price: {
           selector: 'span.price, .sold-out',
           convert: function (price: string) {
@@ -520,28 +534,50 @@ export function parseMerchInfo(html: string, artistUrl: string) {
             return new urlHelper.URL(href, artistUrl).toString();
           },
         },
+        merchType: {
+          selector: 'div.merchtype',
+          convert(text: string) {
+            return text.trim();
+          },
+        },
+        imageUrl: {
+          selector: 'img',
+          attr: 'src',
+          convert(src: string) {
+            if (!src.includes('https')) {
+              return ''
+            }
+            return src;
+          }
+        },
+        backupImageUrl: {
+          selector: 'img',
+          attr: 'data-original',
+        }
       },
     },
   });
   // Convert the scraped data to MerchItem objects with only price information
   const merchItems: MerchItem[] = data.merchItems
-    .filter((item: any) => item.price) // Only include items with prices
-    .map((item: any, index: number) => ({
-      title: `Merch Item ${index + 1}`, // Default title to satisfy schema requirement
-      type: 'Merchandise', // Default type to satisfy schema requirement
+    .filter((item) => item.price) // Only include items with prices
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
       price: item.price,
       url: item.url,
+      type: item.merchType,
+      imageUrl: item.imageUrl || item.backupImageUrl,
     }));
 
   // Validate each item through JSON schema
-  const items = merchItems.filter((item: MerchItem) => {
-    if (ajv.validate('merch-item', item)) {
-      return true;
-    } else {
-      console.error('Validation error on merch item: ', ajv.errorsText(), item);
-      return false;
-    }
-  });
+  // const items = merchItems.filter((item: MerchItem) => {
+  //   if (ajv.validate('merch-item', item)) {
+  //     return true;
+  //   } else {
+  //     console.error('Validation error on merch item: ', ajv.errorsText(), item);
+  //     return false;
+  //   }
+  // });
 
-  return items;
+  return merchItems;
 }

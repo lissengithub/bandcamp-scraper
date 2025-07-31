@@ -56,10 +56,10 @@ export interface AlbumProduct {
     url?: string;
 }
 export interface MerchItem {
+    id: string;
     title: string;
     type: string;
     price?: string;
-    status?: string;
     imageUrl?: string;
     url?: string;
 }

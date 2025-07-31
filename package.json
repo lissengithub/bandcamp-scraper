@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "ajv": "^4.11.8",
-    "cheerio": "^1.1.2",
+    "cheerio": "^1.0.0",
     "json5": "^0.5.1",
     "linez": "^4.1.4",
     "scrape-it": "^6.1.11",

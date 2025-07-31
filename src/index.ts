@@ -112,7 +112,7 @@ export function getMerchInfo(artistUrl: string, cb: Callback<any>): void {
     if (error) {
       cb(error, null)
     } else {
-      const merchItems = htmlParser.parseMerchInfo(html, merchUrl)
+      const merchItems = htmlParser.parseMerchInfo(html, artistUrl)
       cb(null, merchItems)
     }
   })
