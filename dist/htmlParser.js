@@ -44,7 +44,6 @@ exports.parseArtistUrls = parseArtistUrls;
 exports.extractJavascriptObjectVariable = extractJavascriptObjectVariable;
 exports.parseAlbumInfo = parseAlbumInfo;
 exports.parseTrackInfo = parseTrackInfo;
-exports.parseAlbumProducts = parseAlbumProducts;
 exports.hasMerch = hasMerch;
 exports.parseMerchInfo = parseMerchInfo;
 const cheerio = __importStar(require("cheerio"));
@@ -436,41 +435,6 @@ function parseTrackInfo(html, trackUrl) {
         return trackInfo;
     }
 }
-function parseAlbumProducts(html, albumUrl) {
-    const $ = cheerio.load(html);
-    const data = scrape_it_1.default.scrapeHTML($, {
-        products: {
-            listItem: '.buyItem',
-            data: {
-                title: { selector: '.title' },
-                price: { selector: '.price' },
-                type: { selector: '.type' },
-                url: {
-                    selector: 'a',
-                    attr: 'href',
-                    convert: function (href) {
-                        return new urlHelper.URL(href, albumUrl).toString();
-                    },
-                },
-            },
-        },
-    });
-    return data.products.reduce(function (products, product) {
-        const albumProduct = {
-            title: product.title,
-            price: product.price,
-            type: product.type,
-            url: product.url,
-        };
-        if (ajv.validate('album-product', albumProduct)) {
-            products.push(albumProduct);
-        }
-        else {
-            console.error('Validation error on album product: ', ajv.errorsText(), albumProduct, ajv.errors);
-        }
-        return products;
-    }, []);
-}
 // Check if merch is available
 function hasMerch(html) {
     const $ = cheerio.load(html);
@@ -544,14 +508,15 @@ function parseMerchInfo(html, artistUrl) {
         imageUrl: item.imageUrl || item.backupImageUrl,
     }));
     // Validate each item through JSON schema
-    // const items = merchItems.filter((item: MerchItem) => {
-    //   if (ajv.validate('merch-item', item)) {
-    //     return true;
-    //   } else {
-    //     console.error('Validation error on merch item: ', ajv.errorsText(), item);
-    //     return false;
-    //   }
-    // });
-    return merchItems;
+    const items = merchItems.filter((item) => {
+        if (ajv.validate('merch-item', item)) {
+            return true;
+        }
+        else {
+            console.error('Validation error on merch item: ', ajv.errorsText(), item);
+            return false;
+        }
+    });
+    return items;
 }
 //# sourceMappingURL=htmlParser.js.map

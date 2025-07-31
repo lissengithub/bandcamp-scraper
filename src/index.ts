@@ -25,18 +25,6 @@ export function search(params: SearchParams, cb: Callback<SearchResult[]>): void
   })
 }
 
-export function getAlbumsWithTag(params: TagParams, cb: Callback<TagResult[]>): void {
-  const url = utils.generateTagUrl(params)
-  req(url, function (error: Error | null, html: string) {
-    if (error) {
-      cb(error, null)
-    } else {
-      const tagResults = htmlParser.parseTagResults(html)
-      cb(null, tagResults)
-    }
-  })
-}
-
 export function getAlbumUrls(artistUrl: string, cb: Callback<string[]>): void {
   const musicUrl = new urlHelper.URL('/music', artistUrl).toString()
   req(musicUrl, function (error: Error | null, html: string) {
@@ -56,17 +44,6 @@ export function getAlbumInfo(albumUrl: string, cb: Callback<AlbumInfo>): void {
     } else {
       const albumInfo = htmlParser.parseAlbumInfo(html, albumUrl)
       cb(null, albumInfo)
-    }
-  })
-}
-
-export function getAlbumProducts(albumUrl: string, cb: Callback<AlbumProduct[]>): void {
-  req(albumUrl, function (error: Error | null, html: string) {
-    if (error) {
-      cb(error, null)
-    } else {
-      const products = htmlParser.parseAlbumProducts(html, albumUrl)
-      cb(null, products)
     }
   })
 }

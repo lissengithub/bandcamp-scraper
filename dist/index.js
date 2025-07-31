@@ -40,10 +40,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.search = search;
-exports.getAlbumsWithTag = getAlbumsWithTag;
 exports.getAlbumUrls = getAlbumUrls;
 exports.getAlbumInfo = getAlbumInfo;
-exports.getAlbumProducts = getAlbumProducts;
 exports.getArtistUrls = getArtistUrls;
 exports.getTrackInfo = getTrackInfo;
 exports.hasMerch = hasMerch;
@@ -61,18 +59,6 @@ function search(params, cb) {
         else {
             const searchResults = htmlParser.parseSearchResults(html);
             cb(null, searchResults);
-        }
-    });
-}
-function getAlbumsWithTag(params, cb) {
-    const url = utils.generateTagUrl(params);
-    (0, tinyreq_1.default)(url, function (error, html) {
-        if (error) {
-            cb(error, null);
-        }
-        else {
-            const tagResults = htmlParser.parseTagResults(html);
-            cb(null, tagResults);
         }
     });
 }
@@ -96,17 +82,6 @@ function getAlbumInfo(albumUrl, cb) {
         else {
             const albumInfo = htmlParser.parseAlbumInfo(html, albumUrl);
             cb(null, albumInfo);
-        }
-    });
-}
-function getAlbumProducts(albumUrl, cb) {
-    (0, tinyreq_1.default)(albumUrl, function (error, html) {
-        if (error) {
-            cb(error, null);
-        }
-        else {
-            const products = htmlParser.parseAlbumProducts(html, albumUrl);
-            cb(null, products);
         }
     });
 }

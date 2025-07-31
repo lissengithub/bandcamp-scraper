@@ -101,38 +101,6 @@ bandcamp.search(params, function (error, searchResults) {
 
 [View example with output](examples/search.ts).
 
-### `getAlbumsWithTag(params, callback)`
-
-Search for albums with the tag `params.tag` for the current `params.page`.
-
-- params _Object_ - tag _String_ - page _Integer_ (default `1`)
-- callback _Function(error, tagResults)_
-
-#### Tag Results
-
-An array of album information. Matches the [tag-result JSON schema](/schemas/tag-result.json).
-
-#### Example
-
-```js
-const bandcamp = require('bandcamp-scraper')
-
-const params = {
-  tag: 'nuwrld',
-  page: 1
-}
-
-bandcamp.getAlbumsWithTag(params, function (error, tagResults) {
-  if (error) {
-    console.log(error)
-  } else {
-    console.log(tagResults)
-  }
-})
-```
-
-[View example with output](examples/getAlbumsWithTag.ts).
-
 ### `getAlbumUrls(artistUrl, callback)`
 
 Retrieve the album URLs from an artist URL.
@@ -157,34 +125,6 @@ bandcamp.getAlbumUrls(artistUrl, function (error, albumUrls) {
 ```
 
 [View example with output](examples/getAlbumUrls.ts).
-
-### `getAlbumProducts(albumUrl, callback)`
-
-Retrieves all the album's products from its URL.
-
-- albumUrl _String_
-- callback _Function(error, albumProducts)_
-
-#### Album Products
-
-An array of album products that matches the [album-product JSON schema](/schemas/album-product.json).
-
-#### Example
-
-```js
-const bandcamp = require('bandcamp-scraper')
-
-const albumUrl = 'http://musique.coeurdepirate.com/album/blonde'
-bandcamp.getAlbumProducts(albumUrl, function (error, albumProducts) {
-  if (error) {
-    console.log(error)
-  } else {
-    console.log(albumProducts)
-  }
-})
-```
-
-[View example with output](examples/getAlbumProducts.ts).
 
 ### `getAlbumInfo(albumUrl, callback)`
 

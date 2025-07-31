@@ -433,59 +433,6 @@ export function parseTrackInfo(html: string, trackUrl: string): TrackInfo {
     return trackInfo;
   }
 }
-
-export function parseAlbumProducts(
-  html: string,
-  albumUrl: string
-): AlbumProduct[] {
-  const $ = cheerio.load(html);
-  const data = scrapeIt.scrapeHTML<{
-    products: {
-      title: string;
-      price: string;
-      type: string;
-      url: string;
-    }[];
-  }>($, {
-    products: {
-      listItem: '.buyItem',
-      data: {
-        title: { selector: '.title' },
-        price: { selector: '.price' },
-        type: { selector: '.type' },
-        url: {
-          selector: 'a',
-          attr: 'href',
-          convert: function (href: string) {
-            return new urlHelper.URL(href, albumUrl).toString();
-          },
-        },
-      },
-    },
-  });
-
-  return data.products.reduce(function (products: AlbumProduct[], product) {
-    const albumProduct = {
-      title: product.title,
-      price: product.price,
-      type: product.type,
-      url: product.url,
-    };
-
-    if (ajv.validate('album-product', albumProduct)) {
-      products.push(albumProduct);
-    } else {
-      console.error(
-        'Validation error on album product: ',
-        ajv.errorsText(),
-        albumProduct,
-        ajv.errors
-      );
-    }
-    return products;
-  }, []);
-}
-
 // Check if merch is available
 export function hasMerch(html: string): boolean {
   const $ = cheerio.load(html);
@@ -570,14 +517,14 @@ export function parseMerchInfo(html: string, artistUrl: string) {
     }));
 
   // Validate each item through JSON schema
-  // const items = merchItems.filter((item: MerchItem) => {
-  //   if (ajv.validate('merch-item', item)) {
-  //     return true;
-  //   } else {
-  //     console.error('Validation error on merch item: ', ajv.errorsText(), item);
-  //     return false;
-  //   }
-  // });
+  const items = merchItems.filter((item: MerchItem) => {
+    if (ajv.validate('merch-item', item)) {
+      return true;
+    } else {
+      console.error('Validation error on merch item: ', ajv.errorsText(), item);
+      return false;
+    }
+  });
 
-  return merchItems;
+  return items;
 }

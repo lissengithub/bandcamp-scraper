@@ -106,22 +106,6 @@ describe('bandcamp-scraper', () => {
     })
   })
 
-  describe('getAlbumsWithTag', () => {
-    it('scrape tag name and artist', async () => {
-      const tag = sample(tags)
-      const albums = await promisify<any[]>((callback) => 
-        bandcamp.getAlbumsWithTag({ tag: tag }, callback)
-      )
-      
-      if (albums) console.log('albums', albums)
-      expect(Array.isArray(albums)).toBe(true)
-      if (albums) {
-        expect(albums.length).toBeGreaterThan(0)
-      }
-      // TODO validate with JSON schema
-    })
-  })
-
   describe('getAlbumUrls', () => {
     it('scrape album urls', async () => {
       const artistUrl = sample(artistUrls)
@@ -150,23 +134,6 @@ describe('bandcamp-scraper', () => {
       if (albumInfo) console.log('albumInfo', albumInfo)
       expect(albumInfo).not.toBeNull()
       expect(typeof albumInfo).toEqual('object')
-      // TODO validate with JSON schema
-    })
-  })
-
-  describe('getAlbumProducts', () => {
-    it('scrape album products', async () => {
-      const albumUrl = sample(albumUrls)
-      const albumProducts = await promisify<any[]>((callback) => 
-        bandcamp.getAlbumProducts(albumUrl, callback)
-      )
-      
-      console.log('albumUrl', albumUrl)
-      if (albumProducts) console.log('albumProducts', albumProducts)
-      expect(Array.isArray(albumProducts)).toBe(true)
-      if (albumProducts) {
-        expect(albumProducts.length).toBeGreaterThan(0)
-      }
       // TODO validate with JSON schema
     })
   })
