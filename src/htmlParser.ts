@@ -220,14 +220,26 @@ export function parseTagResults(html: string) {
 // parse album urls
 export function parseAlbumUrls(html: string, artistUrl: string) {
   const $ = cheerio.load(html);
-  const data = scrapeIt.scrapeHTML<{ albumLinks: { url: string }[] }>($, {
+  const data = scrapeIt.scrapeHTML<{ albumLinks: { url: string }[], raw: string[] }>($, {
+    raw: {
+      selector: '#music-grid',
+      attr: 'data-client-items',
+      convert(text: string) {
+        if (!text) {
+          return [];
+        }
+        return JSON5.parse(text).map((item: { page_url: string }) => {
+          return new urlHelper.URL(item.page_url, artistUrl).toString();
+        });
+      },
+    },
     albumLinks: {
       listItem: 'a',
       data: {
         url: {
           attr: 'href',
           convert(href: string) {
-            if (/^\/(track|album)\/(.+)$/.exec(href)) {
+            if (/^\/(track|album)\/(.+)$/.exec(href) && !href.includes('?')) {
               return new urlHelper.URL(href, artistUrl).toString();
             }
             return undefined;
@@ -236,10 +248,10 @@ export function parseAlbumUrls(html: string, artistUrl: string) {
       },
     },
   });
-  return data.albumLinks.reduce(function (albumUrls: string[], albumLink) {
-    const url = albumLink.url;
-    if (url && albumUrls.indexOf(url) === -1) {
-      albumUrls.push(url);
+
+  return data.albumLinks.map(x => x.url).concat(data.raw).reduce((albumUrls: string[], link) => {
+    if (link && albumUrls.indexOf(link) === -1) {
+      albumUrls.push(link);
     }
     return albumUrls;
   }, []);

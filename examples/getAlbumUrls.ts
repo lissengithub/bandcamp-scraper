@@ -1,6 +1,7 @@
 import { getAlbumUrls } from '../src/index'
 
-const artistUrl = 'http://musique.coeurdepirate.com/'
+// const artistUrl = 'https://kevinpike.bandcamp.com'
+const artistUrl = 'https://lacedrecords.bandcamp.com'
 getAlbumUrls(artistUrl, function (error: Error | null, albumUrls: string[] | null) {
   if (error) {
     console.log(error)
