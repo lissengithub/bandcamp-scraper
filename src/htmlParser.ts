@@ -4,7 +4,7 @@ import * as urlHelper from 'url';
 import linez from 'linez';
 import Ajv from 'ajv';
 import JSON5 from 'json5';
-import { TrackInfo, AlbumProduct, MerchItem } from './types';
+import { TrackInfo, MerchItem } from './types';
 
 // add search-result Schema
 const ajv = new Ajv();

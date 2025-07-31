@@ -248,13 +248,25 @@ function parseTagResults(html) {
 function parseAlbumUrls(html, artistUrl) {
     const $ = cheerio.load(html);
     const data = scrape_it_1.default.scrapeHTML($, {
+        raw: {
+            selector: '#music-grid',
+            attr: 'data-client-items',
+            convert(text) {
+                if (!text) {
+                    return [];
+                }
+                return json5_1.default.parse(text).map((item) => {
+                    return new urlHelper.URL(item.page_url, artistUrl).toString();
+                });
+            },
+        },
         albumLinks: {
             listItem: 'a',
             data: {
                 url: {
                     attr: 'href',
                     convert(href) {
-                        if (/^\/(track|album)\/(.+)$/.exec(href)) {
+                        if (/^\/(track|album)\/(.+)$/.exec(href) && !href.includes('?')) {
                             return new urlHelper.URL(href, artistUrl).toString();
                         }
                         return undefined;
@@ -263,10 +275,9 @@ function parseAlbumUrls(html, artistUrl) {
             },
         },
     });
-    return data.albumLinks.reduce(function (albumUrls, albumLink) {
-        const url = albumLink.url;
-        if (url && albumUrls.indexOf(url) === -1) {
-            albumUrls.push(url);
+    return data.albumLinks.map(x => x.url).concat(data.raw).reduce((albumUrls, link) => {
+        if (link && albumUrls.indexOf(link) === -1) {
+            albumUrls.push(link);
         }
         return albumUrls;
     }, []);
