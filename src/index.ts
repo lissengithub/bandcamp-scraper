@@ -60,17 +60,6 @@ export function getArtistUrls(labelUrl: string, cb: Callback<string[]>): void {
   })
 }
 
-export function getTrackInfo(trackUrl: string, cb: Callback<TrackInfo>): void {
-  req(trackUrl, function (error: Error | null, html: string) {
-    if (error) {
-      cb(error, null)
-    } else {
-      const trackInfo = htmlParser.parseTrackInfo(html, trackUrl)
-      cb(null, trackInfo)
-    }
-  })
-}
-
 export function hasMerch(artistUrl: string, cb: Callback<boolean>): void {
   const merchUrl = new urlHelper.URL('/merch', artistUrl).toString()
   req(merchUrl, function (error: Error | null, html: string) {

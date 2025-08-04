@@ -43,7 +43,6 @@ exports.parseAlbumUrls = parseAlbumUrls;
 exports.parseArtistUrls = parseArtistUrls;
 exports.extractJavascriptObjectVariable = extractJavascriptObjectVariable;
 exports.parseAlbumInfo = parseAlbumInfo;
-exports.parseTrackInfo = parseTrackInfo;
 exports.hasMerch = hasMerch;
 exports.parseMerchInfo = parseMerchInfo;
 const cheerio = __importStar(require("cheerio"));
@@ -425,25 +424,6 @@ function parseAlbumInfo(html, albumUrl) {
         // TODO add a flag to log only when debugging
         console.error('Validation error on album info: ', ajv.errorsText(), object);
         return null;
-    }
-}
-function parseTrackInfo(html, trackUrl) {
-    const $ = cheerio.load(html);
-    const data = scrape_it_1.default.scrapeHTML($, {
-        name: { selector: 'h2.trackTitle' },
-        duration: { selector: '.time' },
-    });
-    const trackInfo = {
-        name: data.name,
-        duration: data.duration,
-        url: trackUrl,
-    };
-    if (ajv.validate('track-info', trackInfo)) {
-        return trackInfo;
-    }
-    else {
-        console.error('Validation error on track info: ', ajv.errorsText(), trackInfo, ajv.errors);
-        return trackInfo;
     }
 }
 // Check if merch is available

@@ -420,31 +420,6 @@ export function parseAlbumInfo(html: string, albumUrl: string) {
   }
 }
 
-export function parseTrackInfo(html: string, trackUrl: string): TrackInfo {
-  const $ = cheerio.load(html);
-  const data = scrapeIt.scrapeHTML<{ name: string; duration: string }>($, {
-    name: { selector: 'h2.trackTitle' },
-    duration: { selector: '.time' },
-  });
-
-  const trackInfo = {
-    name: data.name,
-    duration: data.duration,
-    url: trackUrl,
-  };
-
-  if (ajv.validate('track-info', trackInfo)) {
-    return trackInfo;
-  } else {
-    console.error(
-      'Validation error on track info: ',
-      ajv.errorsText(),
-      trackInfo,
-      ajv.errors
-    );
-    return trackInfo;
-  }
-}
 // Check if merch is available
 export function hasMerch(html: string): boolean {
   const $ = cheerio.load(html);
