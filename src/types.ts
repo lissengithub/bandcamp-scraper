@@ -57,9 +57,9 @@ export interface MerchItem {
   id: string;
   title: string;
   type: string;
-  price?: string;
-  imageUrl?: string;
-  url?: string;
+  price: string;
+  imageUrl: string;
+  url: string;
 }
 
 export interface Track {
