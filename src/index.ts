@@ -7,7 +7,8 @@ import {
   SearchResult,
   AlbumInfo,
   Callback,
-  Response
+  Response,
+  MerchItem
 } from './types';
 
 export function search(params: SearchParams, cb: Callback<SearchResult[]>): void {
@@ -104,6 +105,17 @@ export function getMerchInfo(artistUrl: string, cb: Callback<any>): void {
       cb(null, merchItems)
     }
   })
+}
+
+export async function promiseGetMerchInfo(artistUrl: string): Promise<Response<MerchItem[]>> {
+  const merchUrl = new urlHelper.URL('/merch', artistUrl).toString()
+  try {
+    const html = await req(merchUrl);
+    const merchItems = htmlParser.parseMerchInfo(html, artistUrl)
+    return { error: null, data: merchItems }
+  } catch (error) {
+    return { error: error as Error, data: null }
+  }
 }
 
 // Export types for consumers

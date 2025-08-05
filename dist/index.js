@@ -47,6 +47,7 @@ exports.promiseGetAlbumInfo = promiseGetAlbumInfo;
 exports.getArtistUrls = getArtistUrls;
 exports.hasMerch = hasMerch;
 exports.getMerchInfo = getMerchInfo;
+exports.promiseGetMerchInfo = promiseGetMerchInfo;
 const tinyreq_1 = __importDefault(require("tinyreq"));
 const urlHelper = __importStar(require("url"));
 const htmlParser = __importStar(require("./htmlParser"));
@@ -146,6 +147,17 @@ function getMerchInfo(artistUrl, cb) {
             cb(null, merchItems);
         }
     });
+}
+async function promiseGetMerchInfo(artistUrl) {
+    const merchUrl = new urlHelper.URL('/merch', artistUrl).toString();
+    try {
+        const html = await (0, tinyreq_1.default)(merchUrl);
+        const merchItems = htmlParser.parseMerchInfo(html, artistUrl);
+        return { error: null, data: merchItems };
+    }
+    catch (error) {
+        return { error: error, data: null };
+    }
 }
 // Export types for consumers
 __exportStar(require("./types"), exports);
