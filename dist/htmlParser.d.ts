@@ -1,4 +1,4 @@
-import { MerchItem } from './types';
+import { AlbumInfo, MerchItem } from './types';
 export declare function parseSearchResults(html: string): any;
 export declare function extractAlbumUrlsFromDataBlob(html: string): {
     name: any;
@@ -10,7 +10,7 @@ export declare function parseTagResults(html: string): any;
 export declare function parseAlbumUrls(html: string, artistUrl: string): string[];
 export declare function parseArtistUrls(html: string, labelUrl: string): string[];
 export declare function extractJavascriptObjectVariable(html: string, variableName: string): string | undefined;
-export declare function parseAlbumInfo(html: string, albumUrl: string): any;
+export declare function parseAlbumInfo(html: string, albumUrl: string): AlbumInfo | null;
 export declare function hasMerch(html: string): boolean;
 export declare function parseMerchInfo(html: string, artistUrl: string): MerchItem[];
 //# sourceMappingURL=htmlParser.d.ts.map

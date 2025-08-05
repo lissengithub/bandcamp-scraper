@@ -4,13 +4,10 @@ import * as htmlParser from './htmlParser';
 import * as utils from './utils';
 import {
   SearchParams,
-  TagParams,
   SearchResult,
-  TagResult,
   AlbumInfo,
-  AlbumProduct, 
-  TrackInfo,
-  Callback 
+  Callback,
+  Response
 } from './types';
 
 export function search(params: SearchParams, cb: Callback<SearchResult[]>): void {
@@ -37,6 +34,17 @@ export function getAlbumUrls(artistUrl: string, cb: Callback<string[]>): void {
   })
 }
 
+export async function promiseGetAlbumUrls(artistUrl: string): Promise<Response<string[]>> {
+  const musicUrl = new urlHelper.URL('/music', artistUrl).toString()
+  try {
+    const html = await req(musicUrl);
+    const albumUrls = htmlParser.parseAlbumUrls(html, artistUrl);
+    return { error: null, data: albumUrls }
+  } catch (error) {
+    return { error: error as Error, data: null }
+  }
+}
+
 export function getAlbumInfo(albumUrl: string, cb: Callback<AlbumInfo>): void {
   req(albumUrl, function (error: Error | null, html: string) {
     if (error) {
@@ -46,6 +54,20 @@ export function getAlbumInfo(albumUrl: string, cb: Callback<AlbumInfo>): void {
       cb(null, albumInfo)
     }
   })
+}
+
+/** Gets album or track info for a given album/track URL. */
+export async function promiseGetAlbumInfo(albumUrl: string): Promise<Response<AlbumInfo>> {
+  try {
+    const html = await req(albumUrl);
+    const albumInfo = htmlParser.parseAlbumInfo(html, albumUrl);
+    if (!albumInfo) {
+      return { error: new Error(`Failed to parse album info for ${albumUrl}`), data: null }
+    }
+    return { error: null, data: albumInfo }
+  } catch (error) {
+    return { error: error as Error, data: null }
+  }
 }
 
 export function getArtistUrls(labelUrl: string, cb: Callback<string[]>): void {

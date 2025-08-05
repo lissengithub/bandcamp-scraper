@@ -4,7 +4,7 @@ import * as urlHelper from 'url';
 import linez from 'linez';
 import Ajv from 'ajv';
 import JSON5 from 'json5';
-import { TrackInfo, MerchItem } from './types';
+import { AlbumInfo, MerchItem } from './types';
 
 // add search-result Schema
 const ajv = new Ajv();
@@ -12,7 +12,6 @@ ajv.addSchema(require('../schemas/search-result.json'), 'search-result');
 ajv.addSchema(require('../schemas/album-product.json'), 'album-product');
 ajv.addSchema(require('../schemas/album-info.json'), 'album-info');
 ajv.addSchema(require('../schemas/tag-result.json'), 'tag-result');
-ajv.addSchema(require('../schemas/track-info.json'), 'track-info');
 ajv.addSchema(require('../schemas/merch-item.json'), 'merch-item');
 
 linez.configure({
@@ -300,7 +299,7 @@ export function extractJavascriptObjectVariable(
   return undefined;
 }
 
-export function parseAlbumInfo(html: string, albumUrl: string) {
+export function parseAlbumInfo(html: string, albumUrl: string): AlbumInfo | null {
   const $ = cheerio.load(html);
   const data = scrapeIt.scrapeHTML<{
     album: {

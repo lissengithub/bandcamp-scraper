@@ -57,7 +57,6 @@ ajv.addSchema(require('../schemas/search-result.json'), 'search-result');
 ajv.addSchema(require('../schemas/album-product.json'), 'album-product');
 ajv.addSchema(require('../schemas/album-info.json'), 'album-info');
 ajv.addSchema(require('../schemas/tag-result.json'), 'tag-result');
-ajv.addSchema(require('../schemas/track-info.json'), 'track-info');
 ajv.addSchema(require('../schemas/merch-item.json'), 'merch-item');
 linez_1.default.configure({
     newlines: ['\n', '\r\n', '\r'],

@@ -41,7 +41,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.search = search;
 exports.getAlbumUrls = getAlbumUrls;
+exports.promiseGetAlbumUrls = promiseGetAlbumUrls;
 exports.getAlbumInfo = getAlbumInfo;
+exports.promiseGetAlbumInfo = promiseGetAlbumInfo;
 exports.getArtistUrls = getArtistUrls;
 exports.hasMerch = hasMerch;
 exports.getMerchInfo = getMerchInfo;
@@ -73,6 +75,17 @@ function getAlbumUrls(artistUrl, cb) {
         }
     });
 }
+async function promiseGetAlbumUrls(artistUrl) {
+    const musicUrl = new urlHelper.URL('/music', artistUrl).toString();
+    try {
+        const html = await (0, tinyreq_1.default)(musicUrl);
+        const albumUrls = htmlParser.parseAlbumUrls(html, artistUrl);
+        return { error: null, data: albumUrls };
+    }
+    catch (error) {
+        return { error: error, data: null };
+    }
+}
 function getAlbumInfo(albumUrl, cb) {
     (0, tinyreq_1.default)(albumUrl, function (error, html) {
         if (error) {
@@ -83,6 +96,20 @@ function getAlbumInfo(albumUrl, cb) {
             cb(null, albumInfo);
         }
     });
+}
+/** Gets album or track info for a given album/track URL. */
+async function promiseGetAlbumInfo(albumUrl) {
+    try {
+        const html = await (0, tinyreq_1.default)(albumUrl);
+        const albumInfo = htmlParser.parseAlbumInfo(html, albumUrl);
+        if (!albumInfo) {
+            return { error: new Error(`Failed to parse album info for ${albumUrl}`), data: null };
+        }
+        return { error: null, data: albumInfo };
+    }
+    catch (error) {
+        return { error: error, data: null };
+    }
 }
 function getArtistUrls(labelUrl, cb) {
     const artistsUrl = new urlHelper.URL('/artists', labelUrl).toString();

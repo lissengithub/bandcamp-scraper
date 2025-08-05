@@ -1,3 +1,15 @@
+type SuccessResponse<T> = {
+  error: null;
+  data: T;
+}
+
+type ErrorResponse = {
+  error: Error;
+  data: null;
+}
+
+export type Response<T> = SuccessResponse<T> | ErrorResponse;
+
 export interface SearchParams {
   query: string;
   page?: number;

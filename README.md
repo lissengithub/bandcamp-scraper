@@ -178,34 +178,6 @@ bandcamp.getArtistUrls(labelUrl, function (error, artistsUrls) {
 
 [View example with output](examples/getArtistsUrls.ts).
 
-
-### `getTrackInfo(trackUrl, callback)`
-
-Retrieves the track info from its URL.
-
-- trackUrl _String_
-- callback _Function(error, trackInfo)_
-
-#### Track Info
-
-An _Object_ that represents the track's info. It matches the [track-info JSON schema](/schemas/track-info.json).
-#### Example
-
-```js
-const bandcamp = require('bandcamp-scraper')
-
-const trackUrl = 'https://dafnez.bandcamp.com/track/serenade'
-bandcamp.getTrackInfo(trackUrl, function (error, trackInfo) {
-  if (error) {
-    console.log(error)
-  } else {
-    console.log(trackInfo)
-  }
-})
-```
-
-[View example with output](examples/getTrackInfo.ts).
-
 ### `hasMerch(artistUrl, callback)`
 
 Checks if an artist has merch available on their Bandcamp page.
