@@ -1,6 +1,7 @@
 import { getAlbumInfo } from '../src/index'
 
-const albumUrl = 'https://coeurdepirate.bandcamp.com/album/blonde'
+
+const albumUrl = 'https://kevinpike.bandcamp.com/track/emergence-from-the-basement'
 getAlbumInfo(albumUrl, function (error: Error | null, albumInfo) {
   if (error) {
     console.log(error)

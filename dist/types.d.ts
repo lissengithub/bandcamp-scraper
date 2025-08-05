@@ -192,7 +192,7 @@ export interface AlbumInfo {
     imageUrl: string;
     tracks: Track[];
     raw: RawData;
-    url?: string;
+    url: string;
 }
 export interface ArtistInfo {
     name: string;

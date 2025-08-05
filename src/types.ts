@@ -209,7 +209,7 @@ export interface AlbumInfo {
   imageUrl: string;
   tracks: Track[];
   raw: RawData;
-  url?: string; // May be present for tracks
+  url: string; // May be present for tracks
 } 
 
 export interface ArtistInfo {
