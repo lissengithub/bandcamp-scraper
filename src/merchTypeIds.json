@@ -1,0 +1,64 @@
+[{
+  "type_id": 0,
+  "name": "Other"
+}, {
+  "type_id": 1,
+  "name": "Compact Disc"
+}, {
+  "type_id": 2,
+  "name": "Vinyl"
+}, {
+  "type_id": 3,
+  "name": "Cassette"
+}, {
+  "type_id": 4,
+  "name": "DVD"
+}, {
+  "type_id": 5,
+  "name": "USB Flash Drive"
+}, {
+  "type_id": 6,
+  "name": "Sheet Music"
+}, {
+  "type_id": 10,
+  "name": "Poster/Print"
+}, {
+  "type_id": 11,
+  "name": "T-Shirt/Apparel"
+}, {
+  "type_id": 12,
+  "name": "Listening Party/Live Stream/Ticket"
+}, {
+  "type_id": 13,
+  "name": "Button/Pin/Patch"
+}, {
+  "type_id": 14,
+  "name": "Bag"
+}, {
+  "type_id": 15,
+  "name": "Vinyl"
+}, {
+  "type_id": 16,
+  "name": "Vinyl"
+}, {
+  "type_id": 17,
+  "name": "Vinyl"
+}, {
+  "type_id": 18,
+  "name": "Vinyl"
+}, {
+  "type_id": 19,
+  "name": "Shirt"
+}, {
+  "type_id": 20,
+  "name": "Sweater/Hoodie"
+}, {
+  "type_id": 21,
+  "name": "Hat"
+}, {
+  "type_id": 22,
+  "name": "Other Apparel"
+}, {
+  "type_id": 23,
+  "name": "Book/Magazine"
+}]

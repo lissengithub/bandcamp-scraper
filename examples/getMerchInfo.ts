@@ -6,6 +6,7 @@ getMerchInfo(merchUrl, function (error: Error | null, merchInfo) {
     console.log(error)
   } else {
     console.log(JSON.stringify(merchInfo, null, 2))
+    console.log(merchInfo.length)
   }
 })
 

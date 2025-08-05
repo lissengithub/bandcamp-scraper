@@ -5,6 +5,13 @@ import linez from 'linez';
 import Ajv from 'ajv';
 import JSON5 from 'json5';
 import { AlbumInfo, MerchItem } from './types';
+import merchTypeId from './merchTypeIds.json';
+
+// Define the type for merchTypeId
+type MerchType = {
+  type_id: number;
+  name: string;
+};
 
 // add search-result Schema
 const ajv = new Ajv();
@@ -440,6 +447,7 @@ export function parseMerchInfo(html: string, artistUrl: string) {
       imageUrl: string;
       backupImageUrl: string;
     }[];
+    raw: MerchItem[];
   }>($, {
     merchItems: {
       listItem: '.merch-grid-item',
@@ -486,10 +494,46 @@ export function parseMerchInfo(html: string, artistUrl: string) {
         backupImageUrl: {
           selector: 'img',
           attr: 'data-original',
+        },
+      },
+    },
+    raw: {
+      selector: '#merch-grid',
+      attr: 'data-client-items',
+      convert(text: string) {
+        if (!text) {
+          return [];
+        }
+        try {
+          const json = JSON5.parse(text);
+          return json.map((item: { 
+            album_artist: string;
+            band_id: number;
+            currency: string;
+            id: number;
+            img_id: number;
+            price: number;
+            title: string;
+            type_id: number;
+            sold_out?: boolean;
+            url: string 
+          }) => {
+            return {
+              id: String(item.id),
+              title: item.title,
+              price: item.sold_out ? 'Sold Out' : String(item.price),
+              url: new urlHelper.URL(item.url, artistUrl).toString(),
+              type: (merchTypeId as MerchType[]).find((type: MerchType) => type.type_id === item.type_id)?.name || 'Unknown',
+              imageUrl: `https://f4.bcbits.com/img/${item.img_id}_37.jpg`,
+            } as MerchItem
+          })
+        } catch (error) {
+          return [];
         }
       },
     },
   });
+
   // Convert the scraped data to MerchItem objects with only price information
   const merchItems: MerchItem[] = data.merchItems
     .filter((item) => item.price) // Only include items with prices
@@ -500,10 +544,10 @@ export function parseMerchInfo(html: string, artistUrl: string) {
       url: item.url,
       type: item.merchType,
       imageUrl: item.imageUrl || item.backupImageUrl,
-    }));
+    }))
 
   // Validate each item through JSON schema
-  const items = merchItems.filter((item: MerchItem) => {
+  const items = merchItems.concat(data.raw).filter((item: MerchItem) => {
     if (ajv.validate('merch-item', item)) {
       return true;
     } else {

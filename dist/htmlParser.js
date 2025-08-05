@@ -51,6 +51,7 @@ const urlHelper = __importStar(require("url"));
 const linez_1 = __importDefault(require("linez"));
 const ajv_1 = __importDefault(require("ajv"));
 const json5_1 = __importDefault(require("json5"));
+const merchTypeIds_json_1 = __importDefault(require("./merchTypeIds.json"));
 // add search-result Schema
 const ajv = new ajv_1.default();
 ajv.addSchema(require('../schemas/search-result.json'), 'search-result');
@@ -482,6 +483,31 @@ function parseMerchInfo(html, artistUrl) {
                 backupImageUrl: {
                     selector: 'img',
                     attr: 'data-original',
+                },
+            },
+        },
+        raw: {
+            selector: '#merch-grid',
+            attr: 'data-client-items',
+            convert(text) {
+                if (!text) {
+                    return [];
+                }
+                try {
+                    const json = json5_1.default.parse(text);
+                    return json.map((item) => {
+                        return {
+                            id: String(item.id),
+                            title: item.title,
+                            price: item.sold_out ? 'Sold Out' : String(item.price),
+                            url: new urlHelper.URL(item.url, artistUrl).toString(),
+                            type: merchTypeIds_json_1.default.find((type) => type.type_id === item.type_id)?.name || 'Unknown',
+                            imageUrl: `https://f4.bcbits.com/img/${item.img_id}_37.jpg`,
+                        };
+                    });
+                }
+                catch (error) {
+                    return [];
                 }
             },
         },
@@ -498,7 +524,7 @@ function parseMerchInfo(html, artistUrl) {
         imageUrl: item.imageUrl || item.backupImageUrl,
     }));
     // Validate each item through JSON schema
-    const items = merchItems.filter((item) => {
+    const items = merchItems.concat(data.raw).filter((item) => {
         if (ajv.validate('merch-item', item)) {
             return true;
         }
