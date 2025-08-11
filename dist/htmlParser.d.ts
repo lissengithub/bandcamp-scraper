@@ -7,6 +7,10 @@ export declare function extractAlbumUrlsFromDataBlob(html: string): {
     artist_url: any;
 }[];
 export declare function parseTagResults(html: string): any;
+export declare function parseAlbumUrlsWithOrigin(html: string, artistUrl: string): {
+    urls: string[];
+    origin: string;
+};
 export declare function parseAlbumUrls(html: string, artistUrl: string): string[];
 export declare function parseArtistUrls(html: string, labelUrl: string): string[];
 export declare function extractJavascriptObjectVariable(html: string, variableName: string): string | undefined;

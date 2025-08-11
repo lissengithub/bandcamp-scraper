@@ -42,6 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.search = search;
 exports.getAlbumUrls = getAlbumUrls;
 exports.promiseGetAlbumUrls = promiseGetAlbumUrls;
+exports.getUrls = getUrls;
 exports.getAlbumInfo = getAlbumInfo;
 exports.promiseGetAlbumInfo = promiseGetAlbumInfo;
 exports.getArtistUrls = getArtistUrls;
@@ -84,6 +85,20 @@ async function promiseGetAlbumUrls(artistUrl) {
             return { error: new Error(`Failed to get album urls for ${artistUrl}`), data: null };
         }
         const albumUrls = htmlParser.parseAlbumUrls(html, artistUrl);
+        return { error: null, data: albumUrls };
+    }
+    catch (error) {
+        return { error: error, data: null };
+    }
+}
+async function getUrls(artistUrl) {
+    const musicUrl = new urlHelper.URL('/music', artistUrl).toString();
+    try {
+        const html = await (0, tinyreq_1.default)(musicUrl);
+        if (!html) {
+            return { error: new Error(`Failed to get album urls for ${artistUrl}`), data: null };
+        }
+        const albumUrls = htmlParser.parseAlbumUrlsWithOrigin(html, artistUrl);
         return { error: null, data: albumUrls };
     }
     catch (error) {

@@ -2,6 +2,10 @@ import { SearchParams, SearchResult, AlbumInfo, Callback, Response, MerchItem } 
 export declare function search(params: SearchParams, cb: Callback<SearchResult[]>): void;
 export declare function getAlbumUrls(artistUrl: string, cb: Callback<string[]>): void;
 export declare function promiseGetAlbumUrls(artistUrl: string): Promise<Response<string[]>>;
+export declare function getUrls(artistUrl: string): Promise<Response<{
+    urls: string[];
+    origin: string;
+}>>;
 export declare function getAlbumInfo(albumUrl: string, cb: Callback<AlbumInfo>): void;
 /** Gets album or track info for a given album/track URL. */
 export declare function promiseGetAlbumInfo(albumUrl: string): Promise<Response<AlbumInfo>>;

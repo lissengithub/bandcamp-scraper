@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseSearchResults = parseSearchResults;
 exports.extractAlbumUrlsFromDataBlob = extractAlbumUrlsFromDataBlob;
 exports.parseTagResults = parseTagResults;
+exports.parseAlbumUrlsWithOrigin = parseAlbumUrlsWithOrigin;
 exports.parseAlbumUrls = parseAlbumUrls;
 exports.parseArtistUrls = parseArtistUrls;
 exports.extractJavascriptObjectVariable = extractJavascriptObjectVariable;
@@ -242,6 +243,51 @@ function parseTagResults(html) {
         }
         return results;
     }, []);
+}
+function parseAlbumUrlsWithOrigin(html, artistUrl) {
+    const $ = cheerio.load(html);
+    const data = scrape_it_1.default.scrapeHTML($, {
+        raw: {
+            selector: '#music-grid',
+            attr: 'data-client-items',
+            convert(text) {
+                if (!text) {
+                    return [];
+                }
+                return json5_1.default.parse(text).map((item) => {
+                    return new urlHelper.URL(item.page_url, artistUrl).toString();
+                });
+            },
+        },
+        albumLinks: {
+            listItem: 'a',
+            data: {
+                url: {
+                    attr: 'href',
+                    convert(href) {
+                        if (/^\/(track|album)\/(.+)$/.exec(href) && !href.includes('?')) {
+                            return new urlHelper.URL(href, artistUrl).toString();
+                        }
+                        return undefined;
+                    },
+                },
+            },
+        },
+        origin: {
+            selector: 'meta[property="og:url"]',
+            attr: 'content'
+        }
+    });
+    const urls = data.albumLinks.map(x => x.url).concat(data.raw).reduce((albumUrls, link) => {
+        if (link && albumUrls.indexOf(link) === -1) {
+            albumUrls.push(link);
+        }
+        return albumUrls;
+    }, []);
+    return {
+        urls,
+        origin: data.origin
+    };
 }
 // parse album urls
 function parseAlbumUrls(html, artistUrl) {
