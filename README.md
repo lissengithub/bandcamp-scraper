@@ -16,6 +16,8 @@ The scraper allows you to:
 - get album info from an album url
 - get album products from an album url
 - get artist info from an artist url
+- check if an artist has merch available
+- get detailed merch information from an artist's merch page
 
 #### Why ?
 
@@ -31,7 +33,7 @@ npm i --save bandcamp-scraper
 
 ## TypeScript Support
 
-This project is now written in TypeScript and provides full type definitions. The compiled JavaScript is available in the `dist` directory.
+This project is written in TypeScript and provides full type definitions. The compiled JavaScript is available in the `dist` directory.
 
 ### TypeScript Usage
 
@@ -63,7 +65,9 @@ search(searchParams, (error: Error | null, results: any) => {
 - `TrackInfo` - Track information object
 - `AlbumProduct` - Album product object
 - `MerchItem` - Merchandise item object
+- `ArtistInfo` - Artist information object
 - `Callback<T>` - Generic callback type
+- `Response<T>` - Generic response wrapper for Promise-based functions
 
 ## Usage
 
@@ -159,7 +163,7 @@ bandcamp.getAlbumInfo(albumUrl, function (error, albumInfo) {
 Retrieves an array of artist URLs from a label's URL for further scraping.
 
 - labelUrl _String_
-- callback _Function(error, albumInfo)_
+- callback _Function(error, artistUrls)_
 
 #### Example
 
@@ -200,7 +204,7 @@ bandcamp.hasMerch(artistUrl, function (error, hasMerch) {
 })
 ```
 
-### `getMerch(artistUrl, callback)`
+### `getMerchInfo(artistUrl, callback)`
 
 Retrieves all merch items from an artist's Bandcamp merch page.
 
@@ -210,10 +214,10 @@ Retrieves all merch items from an artist's Bandcamp merch page.
 #### Merch Items
 
 An array of merch items with the following properties:
+- `id` - Unique identifier for the merch item
 - `title` - The name of the merch item
 - `type` - The type of merch (e.g., "T-Shirt/Apparel")
-- `price` - The price of the item (if available)
-- `status` - Availability status ("Available" or "Sold Out")
+- `price` - The price of the item
 - `imageUrl` - URL to the merch item image
 - `url` - Direct link to the merch item
 
@@ -223,7 +227,7 @@ An array of merch items with the following properties:
 const bandcamp = require('bandcamp-scraper')
 
 const artistUrl = 'https://frenetikglasgow.bandcamp.com'
-bandcamp.getMerch(artistUrl, function (error, merchItems) {
+bandcamp.getMerchInfo(artistUrl, function (error, merchItems) {
   if (error) {
     console.log(error)
   } else {
@@ -232,7 +236,88 @@ bandcamp.getMerch(artistUrl, function (error, merchItems) {
 })
 ```
 
-[View example with output](examples/merch-example.ts).
+[View example with output](examples/getMerchInfo.ts).
+
+## Promise-based APIs
+
+For modern JavaScript/TypeScript applications, Promise-based versions of the main functions are also available:
+
+### `promiseGetAlbumUrls(artistUrl)`
+
+Returns a Promise that resolves to album URLs.
+
+```typescript
+import { promiseGetAlbumUrls } from 'bandcamp-scraper';
+
+try {
+  const response = await promiseGetAlbumUrls('https://artist.bandcamp.com');
+  if (response.error) {
+    console.error('Error:', response.error);
+  } else {
+    console.log('Album URLs:', response.data);
+  }
+} catch (error) {
+  console.error('Unexpected error:', error);
+}
+```
+
+### `promiseGetAlbumInfo(albumUrl)`
+
+Returns a Promise that resolves to album information.
+
+```typescript
+import { promiseGetAlbumInfo } from 'bandcamp-scraper';
+
+try {
+  const response = await promiseGetAlbumInfo('https://artist.bandcamp.com/album/album-name');
+  if (response.error) {
+    console.error('Error:', response.error);
+  } else {
+    console.log('Album info:', response.data);
+  }
+} catch (error) {
+  console.error('Unexpected error:', error);
+}
+```
+
+### `promiseGetMerchInfo(artistUrl)`
+
+Returns a Promise that resolves to merch information.
+
+```typescript
+import { promiseGetMerchInfo } from 'bandcamp-scraper';
+
+try {
+  const response = await promiseGetMerchInfo('https://artist.bandcamp.com');
+  if (response.error) {
+    console.error('Error:', response.error);
+  } else {
+    console.log('Merch items:', response.data);
+  }
+} catch (error) {
+  console.error('Unexpected error:', error);
+}
+```
+
+### `getUrls(artistUrl)`
+
+Returns a Promise that resolves to both album URLs and their origin information.
+
+```typescript
+import { getUrls } from 'bandcamp-scraper';
+
+try {
+  const response = await getUrls('https://artist.bandcamp.com');
+  if (response.error) {
+    console.error('Error:', response.error);
+  } else {
+    console.log('URLs:', response.data.urls);
+    console.log('Origin:', response.data.origin);
+  }
+} catch (error) {
+  console.error('Unexpected error:', error);
+}
+```
 
 ## Development
 
@@ -240,7 +325,7 @@ This project is written in TypeScript. To work on the codebase:
 
 ### Prerequisites
 
-- Node.js (version 14 or higher)
+- Node.js (version 18 or higher)
 - npm
 
 ### Setup
@@ -262,7 +347,7 @@ npm run dev
 - `dist/` - Compiled JavaScript files (generated)
 - `schemas/` - JSON schemas for validation
 - `examples/` - Usage examples
-- `spec/` - Test files
+- `tests/` - Test files using Vitest
 
 ### Available Scripts
 
@@ -273,16 +358,35 @@ npm run dev
 - `npm run test:coverage` - Run tests with coverage report
 - `npm run lint` - Run linter
 - `npm run lint-fix` - Fix linting issues
+- `npm run example:album` - Run album info example
+- `npm run example:search` - Run search example
+- `npm run example:merch` - Run merch example
 
-## Test
+## Testing
 
-Feature tests are run _daily_, thanks to [GitHub Action](https://docs.github.com/en/free-pro-team@latest/actions) schedule actions. This way we know if the scraper is ever broken.
+The project uses Vitest for testing. Feature tests are run _daily_, thanks to [GitHub Action](https://docs.github.com/en/free-pro-team@latest/actions) schedule actions. This way we know if the scraper is ever broken.
 
 Run the test:
 
 ```bash
 npm test
 ```
+
+## Dependencies
+
+### Core Dependencies
+- `cheerio` - HTML parsing and manipulation
+- `scrape-it` - Web scraping utilities
+- `tinyreq` - HTTP request library
+- `ajv` - JSON schema validation
+- `json5` - JSON5 parsing support
+- `linez` - Line processing utilities
+
+### Development Dependencies
+- `typescript` - TypeScript compiler
+- `vitest` - Testing framework
+- `ts-node` - TypeScript execution for examples
+- `standard` - JavaScript linting
 
 ## Contributing
 
