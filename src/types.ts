@@ -122,6 +122,7 @@ export interface CurrentInfo {
   set_price: null | number;
   minimum_price: number;
   minimum_price_nonzero: number;
+  maximum_price?: number;
   require_email_0: null | boolean;
   artist: null | string;
   about: string;

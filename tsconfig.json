@@ -29,7 +29,7 @@
   },
   "include": [
     "src/**/*"
-  ],
+, "examples/dataGen.ts"  ],
   "exclude": [
     "node_modules",
     "dist",

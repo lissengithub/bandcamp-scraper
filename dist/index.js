@@ -80,6 +80,9 @@ async function promiseGetAlbumUrls(artistUrl) {
     const musicUrl = new urlHelper.URL('/music', artistUrl).toString();
     try {
         const html = await (0, tinyreq_1.default)(musicUrl);
+        if (!html) {
+            return { error: new Error(`Failed to get album urls for ${artistUrl}`), data: null };
+        }
         const albumUrls = htmlParser.parseAlbumUrls(html, artistUrl);
         return { error: null, data: albumUrls };
     }
@@ -102,6 +105,9 @@ function getAlbumInfo(albumUrl, cb) {
 async function promiseGetAlbumInfo(albumUrl) {
     try {
         const html = await (0, tinyreq_1.default)(albumUrl);
+        if (!html) {
+            return { error: new Error(`Failed to get album info for ${albumUrl}`), data: null };
+        }
         const albumInfo = htmlParser.parseAlbumInfo(html, albumUrl);
         if (!albumInfo) {
             return { error: new Error(`Failed to parse album info for ${albumUrl}`), data: null };

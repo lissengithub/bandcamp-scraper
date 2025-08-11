@@ -39,6 +39,9 @@ export async function promiseGetAlbumUrls(artistUrl: string): Promise<Response<s
   const musicUrl = new urlHelper.URL('/music', artistUrl).toString()
   try {
     const html = await req(musicUrl);
+    if (!html) {
+      return { error: new Error(`Failed to get album urls for ${artistUrl}`), data: null }
+    }
     const albumUrls = htmlParser.parseAlbumUrls(html, artistUrl);
     return { error: null, data: albumUrls }
   } catch (error) {
@@ -61,6 +64,9 @@ export function getAlbumInfo(albumUrl: string, cb: Callback<AlbumInfo>): void {
 export async function promiseGetAlbumInfo(albumUrl: string): Promise<Response<AlbumInfo>> {
   try {
     const html = await req(albumUrl);
+    if (!html) {
+      return { error: new Error(`Failed to get album info for ${albumUrl}`), data: null }
+    }
     const albumInfo = htmlParser.parseAlbumInfo(html, albumUrl);
     if (!albumInfo) {
       return { error: new Error(`Failed to parse album info for ${albumUrl}`), data: null }

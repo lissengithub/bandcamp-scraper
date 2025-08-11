@@ -10,14 +10,6 @@ const artists = [
   'Faded Paper Figures'
 ]
 
-const tags = [
-  'nuwrld',
-  'brooklyn',
-  'coldwave',
-  'punk',
-  'jazz'
-]
-
 const artistUrls = [
   'http://musique.coeurdepirate.com',
   'https://macdemarco.bandcamp.com',
@@ -62,13 +54,6 @@ const albumUrls = [
 const labelsUrls = [
   'https://planetmu.bandcamp.com',
   'https://randsrecords.bandcamp.com'
-]
-
-const trackUrls = [
-  'https://dafnez.bandcamp.com/track/serenade',
-  'https://xaerarch.bandcamp.com/track/devour-303-absynth-mix',
-  'https://backtick.bandcamp.com/track/approx-start-06-51',
-  'https://ripcordz.bandcamp.com/track/the-beta-58s-leave-me-alone'
 ]
 
 function sample(array: string[]): string {
