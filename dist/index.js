@@ -173,6 +173,9 @@ async function promiseGetMerchInfo(artistUrl) {
     const merchUrl = new urlHelper.URL('/merch', artistUrl).toString();
     try {
         const html = await (0, tinyreq_1.default)(merchUrl);
+        if (!html) {
+            return { error: new Error(`Failed to get merch info for ${artistUrl}`), data: null };
+        }
         const merchItems = htmlParser.parseMerchInfo(html, artistUrl);
         return { error: null, data: merchItems };
     }

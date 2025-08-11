@@ -1,6 +1,6 @@
 {
   "name": "bandcamp-scraper",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A scraper for https://bandcamp.com (fork of masterT/bandcamp-scraper)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

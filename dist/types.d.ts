@@ -50,6 +50,7 @@ export interface MerchItem {
     title: string;
     type: string;
     price: string;
+    currency: string;
     imageUrl: string;
     url: string;
 }

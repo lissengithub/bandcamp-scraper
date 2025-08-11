@@ -498,8 +498,15 @@ function parseMerchInfo(html, artistUrl) {
                 price: {
                     selector: 'span.price, .sold-out',
                     convert: function (price) {
-                        return price ? price.trim() : undefined;
+                        if (price === 'Sold Out') {
+                            return 'Sold Out';
+                        }
+                        // removing any non-numeric characters
+                        return price.replace(/[^0-9.]/g, '');
                     },
+                },
+                currency: {
+                    selector: 'span.currency',
                 },
                 url: {
                     selector: 'a',
@@ -513,7 +520,7 @@ function parseMerchInfo(html, artistUrl) {
                 merchType: {
                     selector: 'div.merchtype',
                     convert(text) {
-                        return text.trim();
+                        return text.trim() || 'unknown';
                     },
                 },
                 imageUrl: {
@@ -542,10 +549,12 @@ function parseMerchInfo(html, artistUrl) {
                 try {
                     const json = json5_1.default.parse(text);
                     return json.map((item) => {
+                        console.log(item);
                         return {
                             id: String(item.id),
                             title: item.title,
                             price: item.sold_out ? 'Sold Out' : String(item.price),
+                            currency: item.currency,
                             url: new urlHelper.URL(item.url, artistUrl).toString(),
                             type: merchTypeIds_json_1.default.find((type) => type.type_id === item.type_id)?.name || 'Unknown',
                             imageUrl: `https://f4.bcbits.com/img/${item.img_id}_37.jpg`,
@@ -557,6 +566,14 @@ function parseMerchInfo(html, artistUrl) {
                 }
             },
         },
+        baseCurrency: {
+            // select the first tag with attribute data-band-currency
+            selector: 'script[data-band-currency]',
+            attr: 'data-band-currency',
+            convert(text) {
+                return text.trim() || 'USD';
+            }
+        }
     });
     // Convert the scraped data to MerchItem objects with only price information
     const merchItems = data.merchItems
@@ -565,6 +582,7 @@ function parseMerchInfo(html, artistUrl) {
         id: item.id,
         title: item.title,
         price: item.price,
+        currency: item.currency || data.baseCurrency,
         url: item.url,
         type: item.merchType,
         imageUrl: item.imageUrl || item.backupImageUrl,

@@ -19,7 +19,11 @@
     },
     "price": {
       "type": "string",
-      "description": "The price of the item (e.g., '£25 GBP', '$15 USD')"
+      "description": "The price of the item (e.g., '25', '15', 'Sold Out')"
+    },
+    "currency": {
+      "type": "string",
+      "description": "The currency of the price (e.g., 'USD', 'GBP')"
     },
     "status": {
       "type": "string",

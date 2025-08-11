@@ -490,12 +490,14 @@ export function parseMerchInfo(html: string, artistUrl: string) {
       id: string;
       title: string;
       price: string;
+      currency: string;
       url: string;
       merchType: string;
       imageUrl: string;
       backupImageUrl: string;
     }[];
     raw: MerchItem[];
+    baseCurrency: string;
   }>($, {
     merchItems: {
       listItem: '.merch-grid-item',
@@ -512,8 +514,15 @@ export function parseMerchInfo(html: string, artistUrl: string) {
         price: {
           selector: 'span.price, .sold-out',
           convert: function (price: string) {
-            return price ? price.trim() : undefined;
+            if (price === 'Sold Out') {
+              return 'Sold Out'
+            }
+            // removing any non-numeric characters
+            return price.replace(/[^0-9.]/g, '');
           },
+        },
+        currency: {
+          selector: 'span.currency',
         },
         url: {
           selector: 'a',
@@ -526,7 +535,7 @@ export function parseMerchInfo(html: string, artistUrl: string) {
         merchType: {
           selector: 'div.merchtype',
           convert(text: string) {
-            return text.trim();
+            return text.trim() || 'unknown'
           },
         },
         imageUrl: {
@@ -570,6 +579,7 @@ export function parseMerchInfo(html: string, artistUrl: string) {
               id: String(item.id),
               title: item.title,
               price: item.sold_out ? 'Sold Out' : String(item.price),
+              currency: item.currency,
               url: new urlHelper.URL(item.url, artistUrl).toString(),
               type: (merchTypeId as MerchType[]).find((type: MerchType) => type.type_id === item.type_id)?.name || 'Unknown',
               imageUrl: `https://f4.bcbits.com/img/${item.img_id}_37.jpg`,
@@ -580,6 +590,14 @@ export function parseMerchInfo(html: string, artistUrl: string) {
         }
       },
     },
+    baseCurrency: {
+      // select the first tag with attribute data-band-currency
+      selector: 'script[data-band-currency]',
+      attr: 'data-band-currency',
+      convert(text: string) {
+        return text.trim() || 'USD'
+      }
+    }
   });
 
   // Convert the scraped data to MerchItem objects with only price information
@@ -589,6 +607,7 @@ export function parseMerchInfo(html: string, artistUrl: string) {
       id: item.id,
       title: item.title,
       price: item.price,
+      currency: item.currency || data.baseCurrency,
       url: item.url,
       type: item.merchType,
       imageUrl: item.imageUrl || item.backupImageUrl,

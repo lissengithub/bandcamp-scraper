@@ -131,6 +131,9 @@ export async function promiseGetMerchInfo(artistUrl: string): Promise<Response<M
   const merchUrl = new urlHelper.URL('/merch', artistUrl).toString()
   try {
     const html = await req(merchUrl);
+    if (!html) {
+      return { error: new Error(`Failed to get merch info for ${artistUrl}`), data: null }
+    }
     const merchItems = htmlParser.parseMerchInfo(html, artistUrl)
     return { error: null, data: merchItems }
   } catch (error) {
