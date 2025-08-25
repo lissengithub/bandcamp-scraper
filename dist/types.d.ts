@@ -208,7 +208,7 @@ export interface ArtistInfo {
 }
 export type Callback<T> = (error: Error | null, result: T | null) => void;
 export interface ProxyConfig {
-    agent?: any;
+    url?: string;
 }
 export declare function search(params: SearchParams, cb: Callback<SearchResult[]>): void;
 export declare function search(params: SearchParams, cb: Callback<SearchResult[]>, proxyConfig?: ProxyConfig): void;

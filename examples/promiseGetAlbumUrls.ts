@@ -2,7 +2,7 @@ import { promiseGetAlbumUrls } from '../src/index'
 
 const artistUrl = 'https://lacedrecords.bandcamp.com';
 (async () => {
-  const { error, data } = await promiseGetAlbumUrls(artistUrl)
+  const { error, data } = await promiseGetAlbumUrls(artistUrl, { url:"http://sp96xbyo6k:z8i3e_FJkk43ncPcNb@dc.decodo.com:10000" })
   if (error) {
     console.log(error)
   } else {

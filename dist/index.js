@@ -53,13 +53,14 @@ const tinyreq_1 = __importDefault(require("tinyreq"));
 const urlHelper = __importStar(require("url"));
 const htmlParser = __importStar(require("./htmlParser"));
 const utils = __importStar(require("./utils"));
+const https_proxy_agent_1 = require("https-proxy-agent");
 function createRequestOptions(url, proxyConfig) {
-    if (!proxyConfig?.agent) {
+    if (!proxyConfig?.url) {
         return url;
     }
     return {
         url,
-        agent: proxyConfig.agent
+        agent: new https_proxy_agent_1.HttpsProxyAgent(proxyConfig.url)
     };
 }
 function search(params, cb, proxyConfig) {

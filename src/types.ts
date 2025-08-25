@@ -230,7 +230,7 @@ export interface ArtistInfo {
 export type Callback<T> = (error: Error | null, result: T | null) => void;
 
 export interface ProxyConfig {
-  agent?: HttpsProxyAgent<string>;
+  url?: string; // Proxy URL (e.g., "http://proxy-server:port")
 }
 
 // Function overloads

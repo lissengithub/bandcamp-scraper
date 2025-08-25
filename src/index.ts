@@ -2,6 +2,7 @@ import req from 'tinyreq';
 import * as urlHelper from 'url';
 import * as htmlParser from './htmlParser';
 import * as utils from './utils';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import {
   SearchParams,
   SearchResult,
@@ -13,12 +14,12 @@ import {
 } from './types';
 
 function createRequestOptions(url: string, proxyConfig?: ProxyConfig): any {
-  if (!proxyConfig?.agent) {
+  if (!proxyConfig?.url) {
     return url;
   }
   return {
     url,
-    agent: proxyConfig.agent
+    agent: new HttpsProxyAgent(proxyConfig.url)
   };
 }
 
