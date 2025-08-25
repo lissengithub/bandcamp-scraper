@@ -549,7 +549,6 @@ function parseMerchInfo(html, artistUrl) {
                 try {
                     const json = json5_1.default.parse(text);
                     return json.map((item) => {
-                        console.log(item);
                         return {
                             id: String(item.id),
                             title: item.title,

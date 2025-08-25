@@ -53,9 +53,19 @@ const tinyreq_1 = __importDefault(require("tinyreq"));
 const urlHelper = __importStar(require("url"));
 const htmlParser = __importStar(require("./htmlParser"));
 const utils = __importStar(require("./utils"));
-function search(params, cb) {
+function createRequestOptions(url, proxyConfig) {
+    if (!proxyConfig?.agent) {
+        return url;
+    }
+    return {
+        url,
+        agent: proxyConfig.agent
+    };
+}
+function search(params, cb, proxyConfig) {
     const url = utils.generateSearchUrl(params);
-    (0, tinyreq_1.default)(url, function (error, html) {
+    const requestOptions = createRequestOptions(url, proxyConfig);
+    (0, tinyreq_1.default)(requestOptions, function (error, html) {
         if (error) {
             cb(error, null);
         }
@@ -65,9 +75,10 @@ function search(params, cb) {
         }
     });
 }
-function getAlbumUrls(artistUrl, cb) {
+function getAlbumUrls(artistUrl, cb, proxyConfig) {
     const musicUrl = new urlHelper.URL('/music', artistUrl).toString();
-    (0, tinyreq_1.default)(musicUrl, function (error, html) {
+    const requestOptions = createRequestOptions(musicUrl, proxyConfig);
+    (0, tinyreq_1.default)(requestOptions, function (error, html) {
         if (error) {
             cb(error, null);
         }
@@ -77,10 +88,11 @@ function getAlbumUrls(artistUrl, cb) {
         }
     });
 }
-async function promiseGetAlbumUrls(artistUrl) {
+async function promiseGetAlbumUrls(artistUrl, proxyConfig) {
     const musicUrl = new urlHelper.URL('/music', artistUrl).toString();
     try {
-        const html = await (0, tinyreq_1.default)(musicUrl);
+        const requestOptions = createRequestOptions(musicUrl, proxyConfig);
+        const html = await (0, tinyreq_1.default)(requestOptions);
         if (!html) {
             return { error: new Error(`Failed to get album urls for ${artistUrl}`), data: null };
         }
@@ -91,10 +103,11 @@ async function promiseGetAlbumUrls(artistUrl) {
         return { error: error, data: null };
     }
 }
-async function getUrls(artistUrl) {
+async function getUrls(artistUrl, proxyConfig) {
     const musicUrl = new urlHelper.URL('/music', artistUrl).toString();
     try {
-        const html = await (0, tinyreq_1.default)(musicUrl);
+        const requestOptions = createRequestOptions(musicUrl, proxyConfig);
+        const html = await (0, tinyreq_1.default)(requestOptions);
         if (!html) {
             return { error: new Error(`Failed to get album urls for ${artistUrl}`), data: null };
         }
@@ -105,8 +118,9 @@ async function getUrls(artistUrl) {
         return { error: error, data: null };
     }
 }
-function getAlbumInfo(albumUrl, cb) {
-    (0, tinyreq_1.default)(albumUrl, function (error, html) {
+function getAlbumInfo(albumUrl, cb, proxyConfig) {
+    const requestOptions = createRequestOptions(albumUrl, proxyConfig);
+    (0, tinyreq_1.default)(requestOptions, function (error, html) {
         if (error) {
             cb(error, null);
         }
@@ -117,9 +131,10 @@ function getAlbumInfo(albumUrl, cb) {
     });
 }
 /** Gets album or track info for a given album/track URL. */
-async function promiseGetAlbumInfo(albumUrl) {
+async function promiseGetAlbumInfo(albumUrl, proxyConfig) {
     try {
-        const html = await (0, tinyreq_1.default)(albumUrl);
+        const requestOptions = createRequestOptions(albumUrl, proxyConfig);
+        const html = await (0, tinyreq_1.default)(requestOptions);
         if (!html) {
             return { error: new Error(`Failed to get album info for ${albumUrl}`), data: null };
         }
@@ -133,9 +148,10 @@ async function promiseGetAlbumInfo(albumUrl) {
         return { error: error, data: null };
     }
 }
-function getArtistUrls(labelUrl, cb) {
+function getArtistUrls(labelUrl, cb, proxyConfig) {
     const artistsUrl = new urlHelper.URL('/artists', labelUrl).toString();
-    (0, tinyreq_1.default)(artistsUrl, function (error, html) {
+    const requestOptions = createRequestOptions(artistsUrl, proxyConfig);
+    (0, tinyreq_1.default)(requestOptions, function (error, html) {
         if (error) {
             cb(error, null);
         }
@@ -145,9 +161,10 @@ function getArtistUrls(labelUrl, cb) {
         }
     });
 }
-function hasMerch(artistUrl, cb) {
+function hasMerch(artistUrl, cb, proxyConfig) {
     const merchUrl = new urlHelper.URL('/merch', artistUrl).toString();
-    (0, tinyreq_1.default)(merchUrl, function (error, html) {
+    const requestOptions = createRequestOptions(merchUrl, proxyConfig);
+    (0, tinyreq_1.default)(requestOptions, function (error, html) {
         if (error) {
             cb(error, null);
         }
@@ -157,9 +174,10 @@ function hasMerch(artistUrl, cb) {
         }
     });
 }
-function getMerchInfo(artistUrl, cb) {
+function getMerchInfo(artistUrl, cb, proxyConfig) {
     const merchUrl = new urlHelper.URL('/merch', artistUrl).toString();
-    (0, tinyreq_1.default)(merchUrl, function (error, html) {
+    const requestOptions = createRequestOptions(merchUrl, proxyConfig);
+    (0, tinyreq_1.default)(requestOptions, function (error, html) {
         if (error) {
             cb(error, null);
         }
@@ -169,10 +187,11 @@ function getMerchInfo(artistUrl, cb) {
         }
     });
 }
-async function promiseGetMerchInfo(artistUrl) {
+async function promiseGetMerchInfo(artistUrl, proxyConfig) {
     const merchUrl = new urlHelper.URL('/merch', artistUrl).toString();
     try {
-        const html = await (0, tinyreq_1.default)(merchUrl);
+        const requestOptions = createRequestOptions(merchUrl, proxyConfig);
+        const html = await (0, tinyreq_1.default)(requestOptions);
         if (!html) {
             return { error: new Error(`Failed to get merch info for ${artistUrl}`), data: null };
         }

@@ -207,5 +207,20 @@ export interface ArtistInfo {
     albums?: AlbumInfo[];
 }
 export type Callback<T> = (error: Error | null, result: T | null) => void;
+export interface ProxyConfig {
+    agent?: any;
+}
+export declare function search(params: SearchParams, cb: Callback<SearchResult[]>): void;
+export declare function search(params: SearchParams, cb: Callback<SearchResult[]>, proxyConfig?: ProxyConfig): void;
+export declare function getAlbumUrls(artistUrl: string, cb: Callback<string[]>): void;
+export declare function getAlbumUrls(artistUrl: string, cb: Callback<string[]>, proxyConfig?: ProxyConfig): void;
+export declare function getAlbumInfo(albumUrl: string, cb: Callback<AlbumInfo>): void;
+export declare function getAlbumInfo(albumUrl: string, cb: Callback<AlbumInfo>, proxyConfig?: ProxyConfig): void;
+export declare function getArtistUrls(labelUrl: string, cb: Callback<string[]>): void;
+export declare function getArtistUrls(labelUrl: string, cb: Callback<string[]>, proxyConfig?: ProxyConfig): void;
+export declare function hasMerch(artistUrl: string, cb: Callback<boolean>): void;
+export declare function hasMerch(artistUrl: string, cb: Callback<boolean>, proxyConfig?: ProxyConfig): void;
+export declare function getMerchInfo(artistUrl: string, cb: Callback<any>): void;
+export declare function getMerchInfo(artistUrl: string, cb: Callback<any>, proxyConfig?: ProxyConfig): void;
 export {};
 //# sourceMappingURL=types.d.ts.map
