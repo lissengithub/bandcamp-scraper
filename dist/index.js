@@ -49,18 +49,23 @@ exports.getArtistUrls = getArtistUrls;
 exports.hasMerch = hasMerch;
 exports.getMerchInfo = getMerchInfo;
 exports.promiseGetMerchInfo = promiseGetMerchInfo;
+exports.promiseDownloadTrack = promiseDownloadTrack;
+exports.promiseGetTrackBuffer = promiseGetTrackBuffer;
 const tinyreq_1 = __importDefault(require("tinyreq"));
 const urlHelper = __importStar(require("url"));
 const htmlParser = __importStar(require("./htmlParser"));
 const utils = __importStar(require("./utils"));
 const https_proxy_agent_1 = require("https-proxy-agent");
+const https = __importStar(require("https"));
+const http = __importStar(require("http"));
+const fs = __importStar(require("fs"));
 function createRequestOptions(url, proxyConfig) {
     if (!proxyConfig?.url) {
         return url;
     }
     return {
         url,
-        agent: new https_proxy_agent_1.HttpsProxyAgent(proxyConfig.url)
+        agent: new https_proxy_agent_1.HttpsProxyAgent(proxyConfig.url),
     };
 }
 function search(params, cb, proxyConfig) {
@@ -77,7 +82,7 @@ function search(params, cb, proxyConfig) {
     });
 }
 function getAlbumUrls(artistUrl, cb, proxyConfig) {
-    const musicUrl = new urlHelper.URL('/music', artistUrl).toString();
+    const musicUrl = new urlHelper.URL("/music", artistUrl).toString();
     const requestOptions = createRequestOptions(musicUrl, proxyConfig);
     (0, tinyreq_1.default)(requestOptions, function (error, html) {
         if (error) {
@@ -90,12 +95,15 @@ function getAlbumUrls(artistUrl, cb, proxyConfig) {
     });
 }
 async function promiseGetAlbumUrls(artistUrl, proxyConfig) {
-    const musicUrl = new urlHelper.URL('/music', artistUrl).toString();
+    const musicUrl = new urlHelper.URL("/music", artistUrl).toString();
     try {
         const requestOptions = createRequestOptions(musicUrl, proxyConfig);
         const html = await (0, tinyreq_1.default)(requestOptions);
         if (!html) {
-            return { error: new Error(`Failed to get album urls for ${artistUrl}`), data: null };
+            return {
+                error: new Error(`Failed to get album urls for ${artistUrl}`),
+                data: null,
+            };
         }
         const albumUrls = htmlParser.parseAlbumUrls(html, artistUrl);
         return { error: null, data: albumUrls };
@@ -105,12 +113,15 @@ async function promiseGetAlbumUrls(artistUrl, proxyConfig) {
     }
 }
 async function getUrls(artistUrl, proxyConfig) {
-    const musicUrl = new urlHelper.URL('/music', artistUrl).toString();
+    const musicUrl = new urlHelper.URL("/music", artistUrl).toString();
     try {
         const requestOptions = createRequestOptions(musicUrl, proxyConfig);
         const html = await (0, tinyreq_1.default)(requestOptions);
         if (!html) {
-            return { error: new Error(`Failed to get album urls for ${artistUrl}`), data: null };
+            return {
+                error: new Error(`Failed to get album urls for ${artistUrl}`),
+                data: null,
+            };
         }
         const albumUrls = htmlParser.parseAlbumUrlsWithOrigin(html, artistUrl);
         return { error: null, data: albumUrls };
@@ -137,11 +148,17 @@ async function promiseGetAlbumInfo(albumUrl, proxyConfig) {
         const requestOptions = createRequestOptions(albumUrl, proxyConfig);
         const html = await (0, tinyreq_1.default)(requestOptions);
         if (!html) {
-            return { error: new Error(`Failed to get album info for ${albumUrl}`), data: null };
+            return {
+                error: new Error(`Failed to get album info for ${albumUrl}`),
+                data: null,
+            };
         }
         const albumInfo = htmlParser.parseAlbumInfo(html, albumUrl);
         if (!albumInfo) {
-            return { error: new Error(`Failed to parse album info for ${albumUrl}`), data: null };
+            return {
+                error: new Error(`Failed to parse album info for ${albumUrl}`),
+                data: null,
+            };
         }
         return { error: null, data: albumInfo };
     }
@@ -150,7 +167,7 @@ async function promiseGetAlbumInfo(albumUrl, proxyConfig) {
     }
 }
 function getArtistUrls(labelUrl, cb, proxyConfig) {
-    const artistsUrl = new urlHelper.URL('/artists', labelUrl).toString();
+    const artistsUrl = new urlHelper.URL("/artists", labelUrl).toString();
     const requestOptions = createRequestOptions(artistsUrl, proxyConfig);
     (0, tinyreq_1.default)(requestOptions, function (error, html) {
         if (error) {
@@ -163,7 +180,7 @@ function getArtistUrls(labelUrl, cb, proxyConfig) {
     });
 }
 function hasMerch(artistUrl, cb, proxyConfig) {
-    const merchUrl = new urlHelper.URL('/merch', artistUrl).toString();
+    const merchUrl = new urlHelper.URL("/merch", artistUrl).toString();
     const requestOptions = createRequestOptions(merchUrl, proxyConfig);
     (0, tinyreq_1.default)(requestOptions, function (error, html) {
         if (error) {
@@ -176,7 +193,7 @@ function hasMerch(artistUrl, cb, proxyConfig) {
     });
 }
 function getMerchInfo(artistUrl, cb, proxyConfig) {
-    const merchUrl = new urlHelper.URL('/merch', artistUrl).toString();
+    const merchUrl = new urlHelper.URL("/merch", artistUrl).toString();
     const requestOptions = createRequestOptions(merchUrl, proxyConfig);
     (0, tinyreq_1.default)(requestOptions, function (error, html) {
         if (error) {
@@ -189,12 +206,15 @@ function getMerchInfo(artistUrl, cb, proxyConfig) {
     });
 }
 async function promiseGetMerchInfo(artistUrl, proxyConfig) {
-    const merchUrl = new urlHelper.URL('/merch', artistUrl).toString();
+    const merchUrl = new urlHelper.URL("/merch", artistUrl).toString();
     try {
         const requestOptions = createRequestOptions(merchUrl, proxyConfig);
         const html = await (0, tinyreq_1.default)(requestOptions);
         if (!html) {
-            return { error: new Error(`Failed to get merch info for ${artistUrl}`), data: null };
+            return {
+                error: new Error(`Failed to get merch info for ${artistUrl}`),
+                data: null,
+            };
         }
         const merchItems = htmlParser.parseMerchInfo(html, artistUrl);
         return { error: null, data: merchItems };
@@ -203,6 +223,145 @@ async function promiseGetMerchInfo(artistUrl, proxyConfig) {
         return { error: error, data: null };
     }
 }
-// Export types for consumers
+/**
+ * Downloads a track's audio file to a local file path.
+ *
+ * @param trackUrl - The Bandcamp track URL
+ * @param outputPath - Where to save the file (optional, defaults to "Artist - Title.mp3")
+ * @param format - Audio format to download (default: 'mp3-128')
+ * @param proxyConfig - Optional proxy configuration
+ * @returns Promise with the file path where the track was saved
+ */
+async function promiseDownloadTrack(trackUrl, outputPath, format = "mp3-128", proxyConfig) {
+    try {
+        // Get album info using the scraper
+        const albumInfoResponse = await promiseGetAlbumInfo(trackUrl, proxyConfig);
+        if (albumInfoResponse.error) {
+            return { error: albumInfoResponse.error, data: null };
+        }
+        if (!albumInfoResponse.data) {
+            return { error: new Error("No album info found"), data: null };
+        }
+        const albumInfo = albumInfoResponse.data;
+        // Extract audio URL
+        const audioUrl = utils.getAudioUrls(albumInfo, format);
+        if (!audioUrl || typeof audioUrl !== "string") {
+            return {
+                error: new Error("No audio URL found for this track"),
+                data: null,
+            };
+        }
+        // Determine output filename
+        const extension = format === "flac" ? "flac" : "mp3";
+        const filename = outputPath ||
+            `${albumInfo.artist} - ${albumInfo.title}.${extension}`.replace(/[^\w\s.-]/g, "");
+        // Download the file
+        await downloadFileToPath(audioUrl, filename, proxyConfig);
+        return { error: null, data: { filePath: filename, trackInfo: albumInfo } };
+    }
+    catch (error) {
+        return { error: error, data: null };
+    }
+}
+/**
+ * Downloads a track's audio file and returns it as a Buffer.
+ * Useful for cloud functions that need to upload to cloud storage.
+ *
+ * @param trackUrl - The Bandcamp track URL
+ * @param format - Audio format to download (default: 'mp3-128')
+ * @param proxyConfig - Optional proxy configuration
+ * @returns Promise with the audio file as a Buffer and track metadata
+ */
+async function promiseGetTrackBuffer(trackUrl, format = "mp3-128", proxyConfig) {
+    try {
+        // Get album info using the scraper
+        const albumInfoResponse = await promiseGetAlbumInfo(trackUrl, proxyConfig);
+        if (albumInfoResponse.error) {
+            return { error: albumInfoResponse.error, data: null };
+        }
+        if (!albumInfoResponse.data) {
+            return { error: new Error("No album info found"), data: null };
+        }
+        const albumInfo = albumInfoResponse.data;
+        // Extract audio URL
+        const audioUrl = utils.getAudioUrls(albumInfo, format);
+        if (!audioUrl || typeof audioUrl !== "string") {
+            return {
+                error: new Error("No audio URL found for this track"),
+                data: null,
+            };
+        }
+        // Download to buffer
+        const buffer = await downloadFileToBuffer(audioUrl, proxyConfig);
+        const mimeType = format === "flac" ? "audio/flac" : "audio/mpeg";
+        return { error: null, data: { buffer, trackInfo: albumInfo, mimeType } };
+    }
+    catch (error) {
+        return { error: error, data: null };
+    }
+}
+/**
+ * Downloads a file from a URL to a local file path
+ */
+function downloadFileToPath(fileUrl, outputPath, proxyConfig) {
+    return new Promise((resolve, reject) => {
+        const urlObj = new URL(fileUrl);
+        const client = urlObj.protocol === "https:" ? https : http;
+        const file = fs.createWriteStream(outputPath);
+        const requestOptions = {};
+        if (proxyConfig?.url && urlObj.protocol === "https:") {
+            requestOptions.agent = new https_proxy_agent_1.HttpsProxyAgent(proxyConfig.url);
+        }
+        client
+            .get(fileUrl, requestOptions, (response) => {
+            if (response.statusCode !== 200) {
+                fs.unlink(outputPath, () => { }); // Delete the file on error
+                reject(new Error(`Failed to download: ${response.statusCode} ${response.statusMessage}`));
+                return;
+            }
+            response.pipe(file);
+            file.on("finish", () => {
+                file.close();
+                resolve();
+            });
+        })
+            .on("error", (err) => {
+            fs.unlink(outputPath, () => { }); // Delete the file on error
+            reject(err);
+        });
+    });
+}
+/**
+ * Downloads a file from a URL and returns it as a Buffer
+ */
+function downloadFileToBuffer(fileUrl, proxyConfig) {
+    return new Promise((resolve, reject) => {
+        const urlObj = new URL(fileUrl);
+        const client = urlObj.protocol === "https:" ? https : http;
+        const chunks = [];
+        const requestOptions = {};
+        if (proxyConfig?.url && urlObj.protocol === "https:") {
+            requestOptions.agent = new https_proxy_agent_1.HttpsProxyAgent(proxyConfig.url);
+        }
+        client
+            .get(fileUrl, requestOptions, (response) => {
+            if (response.statusCode !== 200) {
+                reject(new Error(`Failed to download: ${response.statusCode} ${response.statusMessage}`));
+                return;
+            }
+            response.on("data", (chunk) => {
+                chunks.push(chunk);
+            });
+            response.on("end", () => {
+                resolve(Buffer.concat(chunks));
+            });
+        })
+            .on("error", (err) => {
+            reject(err);
+        });
+    });
+}
+// Export types and utilities for consumers
 __exportStar(require("./types"), exports);
+__exportStar(require("./utils"), exports);
 //# sourceMappingURL=index.js.map

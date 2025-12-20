@@ -15,7 +15,8 @@
     "prepublishOnly": "npm run build",
     "example:album": "ts-node examples/getAlbumInfo.ts",
     "example:search": "ts-node examples/search.ts",
-    "example:merch": "ts-node examples/merch-example.ts"
+    "example:merch": "ts-node examples/merch-example.ts",
+    "download": "ts-node examples/downloadTrack.ts"
   },
   "repository": {
     "type": "git",
